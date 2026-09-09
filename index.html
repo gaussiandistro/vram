@@ -30,6 +30,7 @@
   </head>
 
   <body>
+    <div class="page-layout">
     <main class="container">
       <!-- Day type -->
       <section class="day-section">
@@ -170,16 +171,39 @@
       </section>
     </main>
 
+      <!-- MOTD
+       <aside class="daily-message" aria-labelledby="dailyMessageTitle" hidden> to hide it
+       remove hidden to show it again
+  -->
+  <aside class="daily-message" aria-labelledby="dailyMessageTitle">
+    <!-- optional image
+         uncomment the image below and update the path and description.
+    -->
+    <!--
+    <img
+      class="daily-message-image"
+      src="/message-of-the-day.jpg"
+      alt="Describe your image here"
+    />
+    -->
+
+    <div class="daily-message-content">
+      <h2 id="dailyMessageTitle">Message of the Day</h2>
+      <p>Welcome back LHWHS Students!</p>
+    </div>
+  </aside>
+</div>
+
     <footer class="footer">
       <p>
         © 2026 VRAM. Inspired by but not affiliated with RamWatch. <br />Have feedback, feature
-        requests, or a bug to report? Leave feedback
+        requests, or a bug to report?
         <a
           href="https://forms.gle/ZAy86V6og6b8UtVK7"
           target="_blank"
           rel="noopener noreferrer"
           class="feedback-link"
-          >here</a
+          >Leave feedback here</a
         >.
       </p>
     </footer>
