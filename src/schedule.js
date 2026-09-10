@@ -129,9 +129,12 @@ export function getNextSchoolDay(date) {
   const MAX_DAY_SEARCH = 400;
   const next = new Date(date);
 
-  for (let i = 0; i < MAX_DAY_SEARCH && !getDayType(next); i++) next.setDate(next.getDate() + 1);
+  for (let i = 0; i < MAX_DAY_SEARCH; i++) {
+    next.setDate(next.getDate() + 1);
+    if (getDayType(next)) return next;
+  }
 
-  return getDayType(next) ? next : null;
+  return null;
 }
 
 export function getDisplayDayInfo(now) {
