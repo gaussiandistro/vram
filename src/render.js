@@ -29,6 +29,7 @@ const DAY_CLASS = {
 const byId = (id) => document.getElementById(id);
 
 export const elements = {
+  dailyMessage: byId("dailyMessage"),
   dayMessage: byId("dayMessage"),
   currentPeriod: byId("currentPeriod"),
   countdown: byId("countdown"),
@@ -76,6 +77,19 @@ let lastProgressPercent;
 let renderedScheduleType;
 let highlightedPeriodId;
 let scheduleRows = new Map();
+
+export function renderDailyMessage(message) {
+  const section = elements.dailyMessage;
+  if (!section) return;
+
+  if (!message) {
+    section.hidden = true;
+    return;
+  }
+
+  setText(section.querySelector("p"), message);
+  section.hidden = false;
+}
 
 export function renderDayMessage(now) {
   const info = getDisplayDayInfo(now);

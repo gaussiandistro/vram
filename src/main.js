@@ -9,6 +9,8 @@ import {
 
 import { logError } from "./logger.js";
 
+import { getMotd, loadMotd } from "./motd.js";
+
 import {
   disableNotifications,
   enableNotifications,
@@ -19,6 +21,7 @@ import {
 
 import {
   elements,
+  renderDailyMessage,
   renderDayMessage,
   renderSchedule,
   updateClockToggleLabel,
@@ -157,6 +160,12 @@ void loadScheduleData()
     updateEverything();
     queueNextUpdate();
   });
+
+void loadMotd()
+  .catch((error) => {
+    logError("Failed to load the daily message.", error);
+  })
+  .finally(() => renderDailyMessage(getMotd()));
 
 void (async () => {
   if (!("serviceWorker" in navigator)) return;
