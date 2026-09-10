@@ -26,6 +26,61 @@ const DAY_CLASS = {
   "ER White": "day-white",
 };
 
+const LINK_PATTERN = /\[([^\]]+)\]\(([^)]+)\)/g;
+const ALLOWED_LINK_PROTOCOLS = new Set(["http:", "https:", "mailto:"]);
+
+function appendRichText(parent, text) {
+  let match;
+  let cursor = 0;
+
+	LINK_PATTERN.lastIndex = 0;
+
+  while ((match = LINK_PATTERN.exec(text))) {
+    if (match.index > cursor) parent.append(text.slice(cursor, match.index));
+
+    let url = null;
+    try {
+      url = new URL(match[2]);
+		} catch {
+			// just let it be null
+    }
+
+    if (url && ALLOWED_LINK_PROTOCOLS.has(url.protocol)) {
+      const link = document.createElement("a");
+      link.href = url.href;
+      link.textContent = match[1];
+      link.target = "_blank";
+      link.rel = "noopener noreferrer";
+      parent.append(link);
+    } else {
+      parent.append(match[0]);
+    }
+
+    cursor = LINK_PATTERN.lastIndex;
+  }
+
+  if (cursor < text.length) parent.append(text.slice(cursor));
+}
+
+export function renderDailyMessage(message) {
+  const section = elements.dailyMessage;
+  if (!section) return;
+
+  if (!message) {
+    section.hidden = true;
+    return;
+  }
+
+  const paragraph = section.querySelector("p");
+
+  if (paragraph) {
+    paragraph.replaceChildren();
+    appendRichText(paragraph, message);
+  }
+
+  section.hidden = false;
+}
+
 const byId = (id) => document.getElementById(id);
 
 export const elements = {
@@ -77,19 +132,6 @@ let lastProgressPercent;
 let renderedScheduleType;
 let highlightedPeriodId;
 let scheduleRows = new Map();
-
-export function renderDailyMessage(message) {
-  const section = elements.dailyMessage;
-  if (!section) return;
-
-  if (!message) {
-    section.hidden = true;
-    return;
-  }
-
-  setText(section.querySelector("p"), message);
-  section.hidden = false;
-}
 
 export function renderDayMessage(now) {
   const info = getDisplayDayInfo(now);

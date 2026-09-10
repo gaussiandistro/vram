@@ -524,3 +524,16 @@ body {
   font-size: 20px;
   line-height: 1.6;
 }
+
+.daily-message a {
+  color: var(--blue-day);
+  font-weight: 700;
+  text-decoration-thickness: 1.5px;
+  text-underline-offset: 2px;
+}
+
+.daily-message a:focus-visible {
+  outline: 3px solid var(--blue-day);
+  outline-offset: 2px;
+  border-radius: 3px;
+}
