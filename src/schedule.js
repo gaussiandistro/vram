@@ -1,3 +1,4 @@
+import { getCustomName } from "./periodNames.js";
 import { supabase } from "./supabase.js";
 import { dateKey, secondsIntoDay } from "./time.js";
 
@@ -158,6 +159,10 @@ export function getCurrentPeriod(type, seconds) {
 
 export function getNextPeriod(type, seconds) {
   return schedules[type]?.find((period) => period.startSeconds > seconds) || null;
+}
+
+export function displayName(block) {
+  return getCustomName(block.id) || block.name;
 }
 
 export function getSchedule(type) {

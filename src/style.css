@@ -402,6 +402,74 @@ body {
   white-space: nowrap;
 }
 
+.schedule-name {
+  display: flex;
+  flex: 1 1 auto;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.edit-btn {
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--text);
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.12s ease;
+}
+
+.schedule-row:hover .edit-btn,
+.schedule-row:focus-within .edit-btn,
+.edit-btn:focus-visible {
+  opacity: 1;
+}
+
+.edit-btn:hover {
+  background: var(--hover);
+}
+
+.edit-btn:focus-visible {
+  outline: 3px solid var(--blue-day);
+  outline-offset: 1px;
+}
+
+.edit-btn svg {
+  width: 15px;
+  height: 15px;
+  pointer-events: none;
+}
+
+.name-input {
+  flex: 1 1 auto;
+  min-width: 0;
+  max-width: 16rem;
+  padding: 4px 8px;
+  border: 2px solid var(--blue-day);
+  border-radius: 8px;
+  background: var(--field);
+  color: var(--text);
+  font: inherit;
+  font-size: 16px;
+}
+
+.name-input:focus {
+  outline: none;
+}
+
+@media (hover: none) {
+  .edit-btn {
+    opacity: 1;
+  }
+}
+
 .lunch-row {
   padding-left: 28px;
   opacity: 0.75;
@@ -494,7 +562,8 @@ body {
 
 @media (prefers-reduced-motion: reduce) {
   .schedule-button,
-  .clock-toggle {
+  .clock-toggle,
+  .edit-btn {
     transition: none;
   }
 }

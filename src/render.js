@@ -1,5 +1,6 @@
 import { clockFormat, currentDateTime, simulatedNow } from "./clock.js";
 import {
+  displayName,
   getDayType,
   getCurrentPeriod,
   getDisplayDayInfo,
@@ -8,6 +9,8 @@ import {
   getNextPeriod,
   getSchedule,
 } from "./schedule.js";
+
+import { getCustomName, setCustomName } from "./periodNames.js";
 
 import { notifSettings, notificationPermission, notificationsSupported } from "./notifications.js";
 
@@ -112,9 +115,21 @@ export const elements = {
   notifLunchEnd: byId("notifLunchEnd"),
   notifUpcoming: byId("notifUpcoming"),
   lunches: {
-    A: { timer: byId("lunchATimer"), status: byId("lunchAStatus") },
-    B: { timer: byId("lunchBTimer"), status: byId("lunchBStatus") },
-    C: { timer: byId("lunchCTimer"), status: byId("lunchCStatus") },
+    A: {
+      title: byId("lunchATitle"),
+      timer: byId("lunchATimer"),
+      status: byId("lunchAStatus"),
+    },
+    B: {
+      title: byId("lunchBTitle"),
+      timer: byId("lunchBTimer"),
+      status: byId("lunchBStatus"),
+    },
+    C: {
+      title: byId("lunchCTitle"),
+      timer: byId("lunchCTimer"),
+      status: byId("lunchCStatus"),
+    },
   },
 };
 
@@ -132,6 +147,55 @@ let lastProgressPercent;
 let renderedScheduleType;
 let highlightedPeriodId;
 let scheduleRows = new Map();
+let activeRename = null;
+
+const PENCIL_ICON =
+  '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">' +
+  '<path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>';
+
+function commitActiveRename() {
+  if (!activeRename) return;
+
+  const { input, item, cancelled } = activeRename;
+  activeRename = null;
+
+  if (!cancelled) setCustomName(item.id, input.value);
+  updateMainTracker(currentDateTime());
+}
+
+function beginRename(item, nameSpan) {
+  if (activeRename) return;
+
+  const input = document.createElement("input");
+  input.type = "text";
+  input.className = "name-input";
+  input.maxLength = 30;
+  input.value = getCustomName(item.id) || "";
+  input.placeholder = item.name;
+  input.setAttribute("aria-label", `Rename ${displayName(item)}`);
+
+  activeRename = { input, item, cancelled: false };
+
+  input.addEventListener("keydown", (event) => {
+    if (event.key === "Enter") {
+      event.preventDefault();
+      input.blur();
+    } else if (event.key === "Escape") {
+      activeRename.cancelled = true;
+      input.blur();
+    }
+  });
+
+  input.addEventListener("blur", () => {
+    if (activeRename?.input !== input) return;
+    commitActiveRename();
+    renderSchedule(currentDateTime(), true);
+  });
+
+  nameSpan.replaceWith(input);
+  input.focus();
+  input.select();
+}
 
 export function renderDayMessage(now) {
   const info = getDisplayDayInfo(now);
@@ -181,7 +245,17 @@ function updateLunch(type, current, seconds) {
   setHidden(elements.lunchSection, !isLunch);
   if (!isLunch) return;
 
-  for (const lunch of getLunches(type)) {
+  const lunchesForType = getLunches(type);
+
+  for (const lunchId of ["A", "B", "C"]) {
+    const lunch = lunchesForType.find((entry) => entry.id === lunchId);
+    const target = elements.lunches[lunchId];
+    if (!target) continue;
+
+    setText(target.title, lunch ? displayName(lunch) : `${lunchId} Lunch`);
+  }
+
+  for (const lunch of lunchesForType) {
     const target = elements.lunches[lunch.id];
     if (!target) continue;
 
@@ -230,7 +304,7 @@ export function updateMainTracker(now) {
       setText(elements.periodTimes, formatClock(first.start, clockFormat));
       setProgress(0);
     } else if (next) {
-      setText(elements.currentPeriod, `${next.name} starts in`);
+      setText(elements.currentPeriod, `${displayName(next)} starts in`);
       setText(elements.countdown, formatDuration(next.startSeconds - seconds));
       setText(elements.periodTimes, formatClock(next.start, clockFormat));
       setProgress(0);
@@ -246,7 +320,7 @@ export function updateMainTracker(now) {
     return;
   }
 
-  setText(elements.currentPeriod, current.name);
+  setText(elements.currentPeriod, displayName(current));
   setText(elements.countdown, formatDuration(current.endSeconds - seconds));
   setText(
     elements.periodTimes,
@@ -280,6 +354,8 @@ export function renderSchedule(now, force = false) {
   highlightedPeriodId = undefined;
   scheduleRows = new Map();
 
+  commitActiveRename();
+
   if (!type) {
     setText(elements.scheduleTitle, "No Schedule");
     elements.scheduleList.replaceChildren();
@@ -294,14 +370,29 @@ export function renderSchedule(now, force = false) {
     row.className = `schedule-row${item.isLunch ? " lunch-row" : ""}`;
     if (!item.isLunch) scheduleRows.set(item.id, row);
 
+    const nameCell = document.createElement("span");
+    nameCell.className = "schedule-name";
+
     const name = document.createElement("span");
-    name.textContent = item.name;
+    name.className = "schedule-text";
+    name.textContent = displayName(item);
+    nameCell.append(name);
+
+    if (item.kind !== "passing") {
+      const editButton = document.createElement("button");
+      editButton.type = "button";
+      editButton.className = "edit-btn";
+      editButton.innerHTML = PENCIL_ICON;
+      editButton.setAttribute("aria-label", `Rename ${displayName(item)}`);
+      editButton.addEventListener("click", () => beginRename(item, name));
+      nameCell.append(editButton);
+    }
 
     const time = document.createElement("span");
     time.className = "schedule-time";
     time.textContent = `${formatClock(item.start, clockFormat)} – ${formatClock(item.end, clockFormat)}`;
 
-    row.append(name, time);
+    row.append(nameCell, time);
     fragment.append(row);
   }
 
