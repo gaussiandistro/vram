@@ -36,7 +36,7 @@ function appendRichText(parent, text) {
   let match;
   let cursor = 0;
 
-	LINK_PATTERN.lastIndex = 0;
+  LINK_PATTERN.lastIndex = 0;
 
   while ((match = LINK_PATTERN.exec(text))) {
     if (match.index > cursor) parent.append(text.slice(cursor, match.index));
@@ -44,8 +44,8 @@ function appendRichText(parent, text) {
     let url = null;
     try {
       url = new URL(match[2]);
-		} catch {
-			// just let it be null
+    } catch {
+      // just let it be null
     }
 
     if (url && ALLOWED_LINK_PROTOCOLS.has(url.protocol)) {
