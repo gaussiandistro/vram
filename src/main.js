@@ -9,6 +9,8 @@ import {
 
 import { logError } from "./logger.js";
 
+import { setLunchChoice } from "./lunchChoice.js";
+
 import { getMotd, loadMotd } from "./motd.js";
 
 import {
@@ -31,6 +33,7 @@ import {
 } from "./render.js";
 
 import { loadScheduleData } from "./schedule.js";
+
 import { toInputDate, toInputTime } from "./time.js";
 
 updateClockToggleLabel();
@@ -51,6 +54,16 @@ elements.scheduleToggle?.addEventListener("click", () => {
 });
 
 elements.daySelector?.addEventListener("change", () => renderSchedule(currentDateTime(), true));
+
+for (const selector of Object.values(elements.lunchSelectors)) {
+	selector?.addEventListener("change", () => {
+		// This works for now, but we'll have to figure something out for ER days probably
+    const dayType = selector === elements.lunchSelectors.Blue ? "Blue" : "White";
+    setLunchChoice(dayType, selector.value || null);
+    renderSchedule(currentDateTime(), true);
+    updateEverything();
+  });
+}
 
 const NOTIF_CHECKBOXES = [
   [elements.notifPeriodEnd, "periodEnd"],

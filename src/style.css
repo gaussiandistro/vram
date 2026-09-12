@@ -369,6 +369,23 @@ body {
   margin-bottom: 20px;
 }
 
+.schedule-header-controls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.lunch-picker {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 700;
+  opacity: 0.85;
+}
+
 .schedule-header h2 {
   margin: 0;
 }
@@ -520,6 +537,10 @@ body {
 @media (max-width: 650px) {
   .container {
     padding-top: 35px;
+  }
+
+  .schedule-header-controls {
+    justify-content: center;
   }
 
   #dayMessage {

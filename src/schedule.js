@@ -1,6 +1,7 @@
+import { getLunchChoice } from "./lunchChoice.js";
 import { getCustomName } from "./periodNames.js";
 import { supabase } from "./supabase.js";
-import { dateKey, secondsIntoDay } from "./time.js";
+import { dateKey, secondsIntoDay, timeFromSeconds } from "./time.js";
 
 const DEFAULT_WEEK_PATTERN = { 1: "Blue", 2: "White", 3: "RAM", 4: "Blue", 5: "White" };
 
@@ -33,6 +34,94 @@ export function rebuildScheduleIndexes() {
         ...(lunches[name] || []).map((item) => ({ ...item, isLunch: true })),
       ].sort((a, b) => a.startSeconds - b.startSeconds),
     ])
+  );
+}
+
+function passingPeriodSeconds(type) {
+  const lengths = (schedules[type] || [])
+    .filter((item) => item.kind === "passing")
+    .map((item) => item.endSeconds - item.startSeconds);
+
+  return lengths.length > 0 ? Math.min(...lengths) : 0;
+}
+
+function splitPeriodAroundLunch(type, period, lunch) {
+  const segments = [];
+	const passing = passingPeriodSeconds(type);
+
+  const classEnd = lunch.startSeconds - passing;
+
+  if (classEnd > period.startSeconds) {
+    segments.push({ ...period, end: timeFromSeconds(classEnd), endSeconds: classEnd });
+
+    segments.push({
+      ...period,
+      kind: "passing",
+      start: timeFromSeconds(classEnd),
+      startSeconds: classEnd,
+      end: lunch.start,
+      endSeconds: lunch.startSeconds,
+    });
+  } else if (period.startSeconds < lunch.startSeconds) {
+    segments.push({ ...period, end: lunch.start, endSeconds: lunch.startSeconds });
+  }
+
+  segments.push({ ...lunch, isLunch: true });
+
+  if (lunch.endSeconds < period.endSeconds) {
+    const classStart = Math.min(lunch.endSeconds + passing, period.endSeconds);
+
+    if (classStart > lunch.endSeconds)
+      segments.push({
+        ...period,
+        kind: "passing",
+        start: lunch.end,
+        startSeconds: lunch.endSeconds,
+        end: timeFromSeconds(classStart),
+        endSeconds: classStart,
+      });
+
+    segments.push({
+      ...period,
+      start: timeFromSeconds(classStart),
+      startSeconds: classStart,
+    });
+  }
+
+  return segments;
+}
+
+export function getPersonalizedDisplaySchedule(type) {
+  const base = displaySchedules[type] || [];
+  const lunchId = getLunchChoice(type);
+  if (!lunchId) return base;
+
+  const lunch = getLunches(type).find((entry) => entry.id === lunchId);
+  if (!lunch) return base;
+
+  const period = base.find(
+    (item) =>
+      !item.isLunch &&
+      item.kind !== "passing" &&
+      item.startSeconds <= lunch.startSeconds &&
+      lunch.endSeconds <= item.endSeconds
+  );
+  if (!period) return base;
+
+  // Only show the student's own lunch
+  return base
+    .filter((item) => !item.isLunch)
+    .flatMap((item) => (item === period ? splitPeriodAroundLunch(type, period, lunch) : [item]));
+}
+
+export function getPersonalizedCurrentPeriod(type, seconds) {
+  const hasChoice = getLunchChoice(type) !== null;
+
+  return (
+    getPersonalizedDisplaySchedule(type).find(
+      (item) =>
+        (hasChoice || !item.isLunch) && seconds >= item.startSeconds && seconds < item.endSeconds
+    ) || null
   );
 }
 

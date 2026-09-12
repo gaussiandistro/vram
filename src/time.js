@@ -3,6 +3,13 @@ export function secondsFromTime(time) {
   return (hours * 60 + minutes) * 60;
 }
 
+export function timeFromSeconds(seconds) {
+  const hours = Math.floor(seconds / 3600);
+  const minutes = Math.floor((seconds % 3600) / 60);
+
+  return `${String(hours).padStart(2, "0")}:${String(minutes).padStart(2, "0")}`;
+}
+
 export function dateKey(date) {
   return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(
     date.getDate()

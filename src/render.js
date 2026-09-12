@@ -2,14 +2,14 @@ import { clockFormat, currentDateTime, simulatedNow } from "./clock.js";
 import {
   displayName,
   getDayType,
-  getCurrentPeriod,
   getDisplayDayInfo,
-  getDisplaySchedule,
   getLunches,
-  getNextPeriod,
+  getPersonalizedCurrentPeriod,
+  getPersonalizedDisplaySchedule,
   getSchedule,
 } from "./schedule.js";
 
+import { getLunchChoice } from "./lunchChoice.js";
 import { getCustomName, setCustomName } from "./periodNames.js";
 
 import { notifSettings, notificationPermission, notificationsSupported } from "./notifications.js";
@@ -107,6 +107,10 @@ export const elements = {
   scheduleList: byId("scheduleList"),
   scheduleTitle: byId("scheduleTitle"),
   daySelector: byId("daySelector"),
+  lunchSelectors: {
+    Blue: byId("lunchSelectorBlue"),
+    White: byId("lunchSelectorWhite"),
+  },
   notifSection: byId("notifSection"),
   notifToggle: byId("notifToggle"),
   notifHint: byId("notifHint"),
@@ -148,6 +152,8 @@ let renderedScheduleType;
 let highlightedPeriodId;
 let scheduleRows = new Map();
 let activeRename = null;
+
+const scheduleRowKey = (item) => `${item.id}@${item.startSeconds}`;
 
 const PENCIL_ICON =
   '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">' +
@@ -238,6 +244,11 @@ export function setProgress(progress) {
 }
 
 function updateLunch(type, current, seconds) {
+  if (getLunchChoice(type)) {
+    setHidden(elements.lunchSection, true);
+    return;
+  }
+
   const isLunch = getLunches(type).some(
     (lunch) => lunch.startSeconds <= current.endSeconds && lunch.endSeconds > current.startSeconds
   );
@@ -292,11 +303,12 @@ export function updateMainTracker(now) {
     return;
   }
 
-  const current = getCurrentPeriod(type, seconds);
+  const current = getPersonalizedCurrentPeriod(type, seconds);
 
   if (!current) {
     const first = getSchedule(type)[0];
-    const next = getNextPeriod(type, seconds);
+    const next =
+      getPersonalizedDisplaySchedule(type).find((item) => item.startSeconds > seconds) || null;
 
     if (seconds < first.startSeconds) {
       setText(elements.currentPeriod, "School starts in");
@@ -337,11 +349,27 @@ function selectedScheduleType(now) {
 }
 
 function updateScheduleHighlight(type, now) {
-  const id = getDayType(now) === type ? getCurrentPeriod(type, secondsIntoDay(now))?.id : undefined;
-  if (id === highlightedPeriodId) return;
+  const current =
+    getDayType(now) === type ? getPersonalizedCurrentPeriod(type, secondsIntoDay(now)) : null;
+  const key = current ? scheduleRowKey(current) : undefined;
+
+  if (key === highlightedPeriodId) return;
   if (highlightedPeriodId) scheduleRows.get(highlightedPeriodId)?.classList.remove("current");
-  if (id) scheduleRows.get(id)?.classList.add("current");
-  highlightedPeriodId = id;
+  if (key) scheduleRows.get(key)?.classList.add("current");
+  highlightedPeriodId = key;
+}
+
+function updateLunchPickers(type) {
+  for (const dayType of ["Blue", "White"]) {
+    const selector = elements.lunchSelectors[dayType];
+		if (!selector) continue;
+
+    const hasLunches = type ? (dayType === type ? getLunches(type).length > 0 : true) : false;
+    selector.closest(".lunch-picker")?.classList.toggle("hidden", !hasLunches);
+
+    const choice = getLunchChoice(dayType);
+    if (selector.value !== (choice || "")) selector.value = choice || "";
+  }
 }
 
 export function renderSchedule(now, force = false) {
@@ -355,6 +383,7 @@ export function renderSchedule(now, force = false) {
   scheduleRows = new Map();
 
   commitActiveRename();
+  updateLunchPickers(type);
 
   if (!type) {
     setText(elements.scheduleTitle, "No Schedule");
@@ -365,10 +394,13 @@ export function renderSchedule(now, force = false) {
   setText(elements.scheduleTitle, `${type} Day Schedule`);
   const fragment = document.createDocumentFragment();
 
-  for (const item of getDisplaySchedule(type)) {
+  for (const item of getPersonalizedDisplaySchedule(type)) {
+    // Passing periods are redundant/unncessary imo in the schedule list, but the clock still shows them
+    if (item.kind === "passing") continue;
+
     const row = document.createElement("div");
     row.className = `schedule-row${item.isLunch ? " lunch-row" : ""}`;
-    if (!item.isLunch) scheduleRows.set(item.id, row);
+    if (!item.isLunch) scheduleRows.set(scheduleRowKey(item), row);
 
     const nameCell = document.createElement("span");
     nameCell.className = "schedule-name";

@@ -160,14 +160,36 @@
           <div class="schedule-header">
             <h2 id="scheduleTitle">Schedule</h2>
 
-            <label class="visually-hidden" for="daySelector">Schedule day</label>
-            <select id="daySelector" aria-label="Schedule day">
-              <option value="auto">Auto</option>
-              <option value="Blue">Blue Day</option>
-              <option value="White">White Day</option>
-              <option value="RAM">RAM Day</option>
-              <option value="ER White">ER White Day</option>
-            </select>
+            <div class="schedule-header-controls">
+              <label class="lunch-picker" id="lunchPickerBlue">
+                <span>Blue lunch</span>
+                <select id="lunchSelectorBlue" aria-label="Blue day lunch">
+                  <option value="">None</option>
+                  <option value="A">A Lunch</option>
+                  <option value="B">B Lunch</option>
+                  <option value="C">C Lunch</option>
+                </select>
+              </label>
+
+              <label class="lunch-picker" id="lunchPickerWhite">
+                <span>White lunch</span>
+                <select id="lunchSelectorWhite" aria-label="White day lunch">
+                  <option value="">None</option>
+                  <option value="A">A Lunch</option>
+                  <option value="B">B Lunch</option>
+                  <option value="C">C Lunch</option>
+                </select>
+              </label>
+
+              <label class="visually-hidden" for="daySelector">Schedule day</label>
+              <select id="daySelector" aria-label="Schedule day">
+                <option value="auto">Auto</option>
+                <option value="Blue">Blue Day</option>
+                <option value="White">White Day</option>
+                <option value="RAM">RAM Day</option>
+                <option value="ER White">ER White Day</option>
+              </select>
+            </div>
           </div>
 
           <div id="scheduleList"></div>
