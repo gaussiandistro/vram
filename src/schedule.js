@@ -47,7 +47,7 @@ function passingPeriodSeconds(type) {
 
 function splitPeriodAroundLunch(type, period, lunch) {
   const segments = [];
-	const passing = passingPeriodSeconds(type);
+  const passing = passingPeriodSeconds(type);
 
   const classEnd = lunch.startSeconds - passing;
 

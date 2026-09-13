@@ -8,6 +8,13 @@ function systemTheme() {
   return window.matchMedia?.("(prefers-color-scheme: dark)").matches ? "dark" : "light";
 }
 
+function applyStoredTheme() {
+  const stored = loadStorage(THEME_STORAGE_KEY);
+  if (THEMES.has(stored || "")) document.documentElement.dataset.theme = stored;
+}
+
+applyStoredTheme();
+
 function activeTheme() {
   return document.documentElement.dataset.theme || systemTheme();
 }
@@ -17,7 +24,7 @@ export function currentTheme() {
 }
 
 export function toggleTheme() {
-	const next = activeTheme() === "dark" ? "light" : "dark";
+  const next = activeTheme() === "dark" ? "light" : "dark";
 
   document.documentElement.dataset.theme = next;
   saveStorage(THEME_STORAGE_KEY, next);
