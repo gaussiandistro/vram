@@ -30,19 +30,28 @@ import {
   updateDevStatus,
   updateMainTracker,
   updateNotificationUI,
+  updateThemeToggle,
 } from "./render.js";
 
 import { loadScheduleData } from "./schedule.js";
 
+import { toggleTheme } from "./theme.js";
+
 import { toInputDate, toInputTime } from "./time.js";
 
 updateClockToggleLabel();
+updateThemeToggle();
 
 elements.clockToggle?.addEventListener("click", () => {
   toggleClockFormat();
   updateClockToggleLabel();
   updateEverything();
   renderSchedule(currentDateTime(), true);
+});
+
+elements.themeToggle?.addEventListener("click", () => {
+  toggleTheme();
+  updateThemeToggle();
 });
 
 elements.scheduleToggle?.addEventListener("click", () => {
@@ -56,8 +65,8 @@ elements.scheduleToggle?.addEventListener("click", () => {
 elements.daySelector?.addEventListener("change", () => renderSchedule(currentDateTime(), true));
 
 for (const selector of Object.values(elements.lunchSelectors)) {
-	selector?.addEventListener("change", () => {
-		// This works for now, but we'll have to figure something out for ER days probably
+  selector?.addEventListener("change", () => {
+    // This works for now, but we'll have to figure something out for ER days probably
     const dayType = selector === elements.lunchSelectors.Blue ? "Blue" : "White";
     setLunchChoice(dayType, selector.value || null);
     renderSchedule(currentDateTime(), true);

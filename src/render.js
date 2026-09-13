@@ -1,4 +1,5 @@
 import { clockFormat, currentDateTime, simulatedNow } from "./clock.js";
+import { currentTheme } from "./theme.js";
 import {
   displayName,
   getDayType,
@@ -88,6 +89,7 @@ const byId = (id) => document.getElementById(id);
 
 export const elements = {
   dailyMessage: byId("dailyMessage"),
+  themeToggle: byId("themeToggle"),
   dayMessage: byId("dayMessage"),
   currentPeriod: byId("currentPeriod"),
   countdown: byId("countdown"),
@@ -362,7 +364,7 @@ function updateScheduleHighlight(type, now) {
 function updateLunchPickers(type) {
   for (const dayType of ["Blue", "White"]) {
     const selector = elements.lunchSelectors[dayType];
-		if (!selector) continue;
+    if (!selector) continue;
 
     const hasLunches = type ? (dayType === type ? getLunches(type).length > 0 : true) : false;
     selector.closest(".lunch-picker")?.classList.toggle("hidden", !hasLunches);
@@ -435,6 +437,13 @@ export function renderSchedule(now, force = false) {
 export function updateClockToggleLabel() {
   setText(elements.clockToggle, clockFormat === "12" ? "24h" : "12h");
   elements.clockToggle?.setAttribute("aria-pressed", String(clockFormat === "24"));
+}
+
+export function updateThemeToggle() {
+  const label = `Switch to ${currentTheme() === "dark" ? "light" : "dark"} theme`;
+
+  elements.themeToggle?.setAttribute("aria-label", label);
+  if (elements.themeToggle) elements.themeToggle.title = label;
 }
 
 export function updateNotificationUI() {
