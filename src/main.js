@@ -200,3 +200,33 @@ void (async () => {
     logError("Service worker / push subscription setup failed.", error);
   }
 })();
+
+const changelogToggle = document.getElementById("changelogToggle");
+const changelogModal = document.getElementById("changelogModal");
+const changelogClose = document.getElementById("changelogClose");
+
+function openChangelog() {
+  changelogModal?.classList.remove("hidden");
+  changelogClose?.focus();
+}
+
+function closeChangelog() {
+  changelogModal?.classList.add("hidden");
+  changelogToggle?.focus();
+}
+
+changelogToggle?.addEventListener("click", openChangelog);
+
+changelogClose?.addEventListener("click", closeChangelog);
+
+changelogModal?.addEventListener("click", (event) => {
+  if (event.target === changelogModal) {
+    closeChangelog();
+  }
+});
+
+document.addEventListener("keydown", (event) => {
+  if (event.key === "Escape" && changelogModal && !changelogModal.classList.contains("hidden")) {
+    closeChangelog();
+  }
+});
