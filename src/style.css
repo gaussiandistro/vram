@@ -882,7 +882,7 @@ body {
 @media (max-width: 650px) {
   .changelog-toggle {
     left: 8px;
-    bottom: 50px;
+    bottom: 8px;
     font-size: 10px;
   }
 
