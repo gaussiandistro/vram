@@ -938,3 +938,12 @@ body {
     padding-bottom: 50px;
   }
 }
+
+
+.footer {
+  opacity: 0.8;
+}
+
+.feedback-link {
+  color: var(--blue-day);
+}
