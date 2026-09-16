@@ -473,9 +473,7 @@ export function updateNotificationUI() {
 
   setText(
     elements.notifHint,
-    permission === "denied"
-      ? ""
-      : "Notifications will appear even if the tab or browser is closed!"
+    permission === "denied" ? "" : "Notifications will appear even if the tab or browser is closed!"
   );
 
   setHidden(elements.notifHint, permission !== "denied");
