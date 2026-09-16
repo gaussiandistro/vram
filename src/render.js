@@ -474,8 +474,8 @@ export function updateNotificationUI() {
   setText(
     elements.notifHint,
     permission === "denied"
-      ? "Notifications only work on Safari; they are blocked on Chrome."
-      : "Notifications only work on Safari; they are blocked on Chrome. Notifications will appear even if the tab or browser is closed!"
+      ? ""
+      : "Notifications will appear even if the tab or browser is closed!"
   );
 
   setHidden(elements.notifHint, permission !== "denied");
