@@ -117,6 +117,9 @@ export const elements = {
   notifToggle: byId("notifToggle"),
   notifHint: byId("notifHint"),
   notifOptions: byId("notifOptions"),
+  notifEnableOption: byId("notifEnableOption"),
+  notifEnable: byId("notifEnable"),
+  notifTypeOptions: byId("notifTypeOptions"),
   notifPeriodEnd: byId("notifPeriodEnd"),
   notifLunchEnd: byId("notifLunchEnd"),
   notifUpcoming: byId("notifUpcoming"),
@@ -146,6 +149,8 @@ function setText(element, text) {
 function setHidden(element, hidden) {
   element?.classList.toggle("hidden", hidden);
 }
+
+let notifPanelOpen = false;
 
 let lastDayMessageKey = "";
 let lastProgressDegrees;
@@ -453,30 +458,32 @@ export function updateNotificationUI() {
   setHidden(elements.notifSection, unsupported);
   if (unsupported) return;
 
-  elements.notifToggle.disabled = permission === "denied";
-
-  elements.notifToggle.setAttribute(
-    "aria-pressed",
-    String(permission === "granted" && notifSettings.enabled)
-  );
+  const blocked = permission === "denied";
+  elements.notifToggle.disabled = blocked;
 
   setText(
     elements.notifToggle,
-    permission === "denied"
+    blocked
       ? "Notifications blocked"
-      : notifSettings.enabled
-        ? "Disable Notifications"
-        : "Enable Notifications"
+      : notifPanelOpen
+        ? "Hide Notification Panel"
+        : "Show Notification Panel"
   );
 
-  setHidden(elements.notifOptions, permission !== "granted" || !notifSettings.enabled);
+  elements.notifToggle?.setAttribute("aria-expanded", String(notifPanelOpen));
+
+  setHidden(elements.notifOptions, !notifPanelOpen);
+
+  if (elements.notifEnable) elements.notifEnable.checked = notifSettings.enabled;
 
   setText(
     elements.notifHint,
-    permission === "denied" ? "" : "Notifications will appear even if the tab or browser is closed!"
+    blocked
+      ? "Notifications are blocked in your browser settings."
+      : "Notifications will appear even if the tab or browser is closed!"
   );
 
-  setHidden(elements.notifHint, permission !== "denied");
+  setHidden(elements.notifHint, !blocked && !notifPanelOpen);
 
   for (const [checkbox, key] of [
     [elements.notifPeriodEnd, "periodEnd"],
@@ -484,6 +491,17 @@ export function updateNotificationUI() {
     [elements.notifUpcoming, "upcoming"],
   ])
     if (checkbox) checkbox.checked = notifSettings[key];
+
+  const typeOptionsEnabled = permission === "granted" && notifSettings.enabled;
+  elements.notifTypeOptions?.classList.toggle("off", !typeOptionsEnabled);
+
+  if (elements.notifEnableOption)
+    elements.notifEnableOption.classList.toggle("notif-option-active", typeOptionsEnabled);
+}
+
+export function toggleNotifPanel() {
+  notifPanelOpen = !notifPanelOpen;
+  updateNotificationUI();
 }
 
 export function updateDevStatus() {

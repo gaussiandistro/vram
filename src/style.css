@@ -356,6 +356,14 @@ body {
   border-top: 1px solid var(--row-border);
 }
 
+.notif-option-active span {
+  font-weight: 700;
+}
+
+.notif-type-options.off .notif-option {
+  opacity: 0.55;
+}
+
 .lunch-section h2 {
   text-align: center;
   font-size: 32px;

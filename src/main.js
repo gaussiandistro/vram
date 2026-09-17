@@ -26,6 +26,7 @@ import {
   renderDailyMessage,
   renderDayMessage,
   renderSchedule,
+  toggleNotifPanel,
   updateClockToggleLabel,
   updateDevStatus,
   updateMainTracker,
@@ -80,8 +81,10 @@ const NOTIF_CHECKBOXES = [
   [elements.notifUpcoming, "upcoming"],
 ];
 
-elements.notifToggle?.addEventListener("click", async () => {
-  if (notifSettings.enabled) {
+elements.notifToggle?.addEventListener("click", toggleNotifPanel);
+
+elements.notifEnable?.addEventListener("change", async () => {
+  if (!elements.notifEnable.checked) {
     disableNotifications();
     updateNotificationUI();
     return;
