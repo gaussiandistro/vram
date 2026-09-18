@@ -132,8 +132,14 @@
             Show Schedule
           </button>
 
-          <button id="notifToggle" class="clock-toggle" type="button" aria-pressed="false">
-            Enable Notifications
+          <button
+            id="notifToggle"
+            class="clock-toggle"
+            type="button"
+            aria-controls="notifSection"
+            aria-expanded="false"
+          >
+            Show Notification Panel
           </button>
 
           <button id="clockToggle" class="clock-toggle" type="button" aria-pressed="false">
@@ -172,20 +178,27 @@
         <p id="notifHint" class="notif-hint hidden"></p>
 
         <div id="notifOptions" class="notif-options hidden">
-          <label class="notif-option">
-            <input id="notifPeriodEnd" type="checkbox" checked />
-            <span>Notify when a period ends</span>
+          <label class="notif-option" id="notifEnableOption">
+            <input id="notifEnable" type="checkbox" />
+            <span>Enable notifications</span>
           </label>
 
-          <label class="notif-option">
-            <input id="notifLunchEnd" type="checkbox" checked />
-            <span>Notify when lunch ends</span>
-          </label>
+          <div id="notifTypeOptions" class="notif-type-options">
+            <label class="notif-option">
+              <input id="notifPeriodEnd" type="checkbox" checked />
+              <span>Notify when a period ends</span>
+            </label>
 
-          <label class="notif-option">
-            <input id="notifUpcoming" type="checkbox" checked />
-            <span>Also remind me 2 minutes before</span>
-          </label>
+            <label class="notif-option">
+              <input id="notifLunchEnd" type="checkbox" checked />
+              <span>Notify when lunch ends</span>
+            </label>
+
+            <label class="notif-option">
+              <input id="notifUpcoming" type="checkbox" checked />
+              <span>Also remind me 2 minutes before</span>
+            </label>
+          </div>
         </div>
       </section>
 
@@ -270,12 +283,24 @@
               user friendly :>
             </li>
             <li>
-              Thanks to everyone who submits feedback, bug reports, and feature ideas! Requests for features unrelated to school will be ignored and thrown down the stairs.
+              Thanks to everyone who submits feedback, bug reports, and feature ideas! Requests for
+              features unrelated to school will be ignored and thrown down the stairs.
             </li>
           </ul>
         </div>
         <br />
         <h2 id="changelogTitle">Changelog</h2>
+
+        <div class="changelog-entry">
+          <h3>Notification Panel</h3>
+          <p class="changelog-date">September 16, 2026</p>
+          <ul>
+            <li>
+              Moved notification controls into a panel you can show or hide, with a new checkbox to
+              enable or disable notifications.
+            </li>
+          </ul>
+        </div>
 
         <div class="changelog-entry">
           <h3>Added Changelog</h3>
