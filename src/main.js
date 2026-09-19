@@ -31,17 +31,16 @@ import {
   updateDevStatus,
   updateMainTracker,
   updateNotificationUI,
-  updateThemeToggle,
 } from "./render.js";
 
 import { loadScheduleData } from "./schedule.js";
 
-import { toggleTheme } from "./theme.js";
+import { initThemeCustomizer } from "./themeCustomizer.js";
 
 import { toInputDate, toInputTime } from "./time.js";
 
 updateClockToggleLabel();
-updateThemeToggle();
+initThemeCustomizer();
 
 elements.clockToggle?.addEventListener("click", () => {
   toggleClockFormat();
@@ -50,10 +49,6 @@ elements.clockToggle?.addEventListener("click", () => {
   renderSchedule(currentDateTime(), true);
 });
 
-elements.themeToggle?.addEventListener("click", () => {
-  toggleTheme();
-  updateThemeToggle();
-});
 
 elements.scheduleToggle?.addEventListener("click", () => {
   const open = elements.schedulePanel?.classList.contains("hidden") ?? false;

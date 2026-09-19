@@ -31,43 +31,196 @@
 
   <body>
     <button
-      id="themeToggle"
-      class="theme-toggle"
+  id="themeCustomizerToggle"
+  class="theme-toggle"
+  type="button"
+  aria-label="Customize theme"
+  aria-controls="themeCustomizerPanel"
+  aria-expanded="false"
+  title="Customize theme"
+>
+  <svg
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="1"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    aria-hidden="true"
+  >
+  <rect width="24" height="24" opacity="0"/>
+
+  <path d="M19.54 5.08A10.61 10.61 0 0 0 11.91 2a10 10 0 0 0-.05 20 2.58 2.58 0 0 0 2.53-1.89 2.52 2.52 0 0 0-.57-2.28.5.5 0 0 1 .37-.83h1.65A6.15 6.15 0 0 0 22 11.33a8.48 8.48 0 0 0-2.46-6.25zM15.88 15h-1.65a2.49 2.49 0 0 0-1.87 4.15.49.49 0 0 1 .12.49c-.05.21-.28.34-.59.36a8 8 0 0 1-7.82-9.11A8.1 8.1 0 0 1 11.92 4H12a8.47 8.47 0 0 1 6.1 2.48 6.5 6.5 0 0 1 1.9 4.77A4.17 4.17 0 0 1 15.88 15z"/>
+  
+  <circle cx="12" cy="6.5" r="1.5"/>
+  
+  <path d="M15.25 7.2a1.5 1.5 0 1 0 2.05.55 1.5 1.5 0 0 0-2.05-.55z"/>
+  
+  <path d="M8.75 7.2a1.5 1.5 0 1 0 .55 2.05 1.5 1.5 0 0 0-.55-2.05z"/>
+  
+  <path d="M6.16 11.26a1.5 1.5 0 1 0 2.08.4 1.49 1.49 0 0 0-2.08-.4z"/>
+  </svg>
+</button>
+
+<aside
+  id="themeCustomizerPanel"
+  class="theme-customizer hidden"
+  aria-labelledby="themeCustomizerTitle"
+>
+  <div class="theme-customizer-header">
+    <h2 id="themeCustomizerTitle">Theme Customizer</h2>
+
+    <button
+      id="themeCustomizerClose"
+      class="theme-customizer-close"
       type="button"
-      aria-label="Switch to dark theme"
-      title="Switch theme"
+      aria-label="Close theme customizer"
     >
-      <svg
-        class="theme-icon theme-icon-sun"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        stroke-width="2"
-        stroke-linecap="round"
-        aria-hidden="true"
-      >
-        <circle cx="12" cy="12" r="4" />
-        <path
-          d="M12 2v2m0 16v2M4.93 4.93l1.41 1.41m11.32 11.32 1.41 1.41M2 12h2m16 0h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"
-        />
-      </svg>
-      <svg
-        class="theme-icon theme-icon-moon"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        stroke-width="2"
-        stroke-linecap="round"
-        stroke-linejoin="round"
-        aria-hidden="true"
-      >
-        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79Z" />
-      </svg>
+      ×
     </button>
+  </div>
+
+  <section class="theme-control-section">
+    <label for="themeFont">
+      <strong>Google Font</strong>
+    </label>
+
+    <div class="theme-font-row">
+      <input
+        id="themeFont"
+        type="text"
+        list="googleFontSuggestions"
+        placeholder="Roboto Slab"
+        autocomplete="off"
+      />
+
+      <button id="themeFontApply" type="button">
+        Apply
+      </button>
+    </div>
+
+    <datalist id="googleFontSuggestions">
+      <option value="Roboto Slab"></option>
+      <option value="Roboto"></option>
+      <option value="Open Sans"></option>
+      <option value="Lato"></option>
+      <option value="Montserrat"></option>
+      <option value="Poppins"></option>
+      <option value="Inter"></option>
+      <option value="Nunito"></option>
+      <option value="Merriweather"></option>
+      <option value="Oswald"></option>
+      <option value="Raleway"></option>
+      <option value="Source Sans 3"></option>
+      <option value="Playfair Display"></option>
+      <option value="Space Grotesk"></option>
+      <option value="EB Garamond"></option>
+    </datalist>
+
+    <p class="theme-help">
+      Enter the exact name of any font available on Google Fonts.
+    </p>
+
+    <button id="themeFontReset" class="theme-reset-button" type="button">
+      Reset font
+    </button>
+  </section>
+
+  <section class="theme-control-section">
+    <div class="theme-control-title">
+      <strong>Text color</strong>
+      <span id="themeTextPreview" class="color-preview"></span>
+    </div>
+
+    <div class="rgb-control">
+      <label for="themeTextR">R</label>
+      <input id="themeTextR" type="range" min="0" max="255" value="17" />
+      <output id="themeTextROutput">17</output>
+    </div>
+
+    <div class="rgb-control">
+      <label for="themeTextG">G</label>
+      <input id="themeTextG" type="range" min="0" max="255" value="17" />
+      <output id="themeTextGOutput">17</output>
+    </div>
+
+    <div class="rgb-control">
+      <label for="themeTextB">B</label>
+      <input id="themeTextB" type="range" min="0" max="255" value="17" />
+      <output id="themeTextBOutput">17</output>
+    </div>
+
+    <label class="hex-control" for="themeTextHex">
+      Hex
+      <input
+        id="themeTextHex"
+        type="text"
+        maxlength="7"
+        spellcheck="false"
+        value="#111111"
+      />
+    </label>
+
+    <button id="themeTextReset" class="theme-reset-button" type="button">
+      Reset text color
+    </button>
+  </section>
+
+  <section class="theme-control-section">
+    <div class="theme-control-title">
+      <strong>Background color</strong>
+      <span id="themeBackgroundPreview" class="color-preview"></span>
+    </div>
+
+    <div class="rgb-control">
+      <label for="themeBackgroundR">R</label>
+      <input id="themeBackgroundR" type="range" min="0" max="255" value="179" />
+      <output id="themeBackgroundROutput">179</output>
+    </div>
+
+    <div class="rgb-control">
+      <label for="themeBackgroundG">G</label>
+      <input id="themeBackgroundG" type="range" min="0" max="255" value="212" />
+      <output id="themeBackgroundGOutput">212</output>
+    </div>
+
+    <div class="rgb-control">
+      <label for="themeBackgroundB">B</label>
+      <input id="themeBackgroundB" type="range" min="0" max="255" value="239" />
+      <output id="themeBackgroundBOutput">239</output>
+    </div>
+
+    <label class="hex-control" for="themeBackgroundHex">
+      Hex
+      <input
+        id="themeBackgroundHex"
+        type="text"
+        maxlength="7"
+        spellcheck="false"
+        value="#b3d4ef"
+      />
+    </label>
+
+    <button
+      id="themeBackgroundReset"
+      class="theme-reset-button"
+      type="button"
+    >
+      Reset background color
+    </button>
+  </section>
+
+  <button id="themeResetLight" class="theme-reset-light" type="button">
+    Reset to Light Mode
+  </button>
+  <button id="themeResetDark" class="theme-reset-dark" type="button">
+    Reset to Dark Mode
+  </button>
+</aside>
 
     <section id="dailyMessage" class="daily-message" aria-labelledby="dailyMessageTitle">
       <!-- <h2 id="dailyMessageTitle">Message of the Day</h2> -->
-      <p>Welcome back LHWHS students! Check here for any announcements or messages.</p>
+      <p> </p>
     </section>
 
     <main class="container">
@@ -277,7 +430,7 @@
             <li>VRAM is a student developed project built for the LHWHS community.</li>
             <li>Jiaxiang Xie: Creator and developer of VRAM</li>
             <li>Ian Rodrigues: Developer and contributor</li>
-            <li>VRAM is actively maintained and improved by both developers.</li>
+            <li>VRAM is actively maintained and updated by both developers.</li>
             <li>
               For those who are just here to check the time, we plan to keep VRAM minimalistic and
               user friendly :>
@@ -290,6 +443,28 @@
         </div>
         <br />
         <h2 id="changelogTitle">Changelog</h2>
+
+        <div class="changelog-entry">
+          <h3>Theme Customizer!</h3>
+          <p class="changelog-date">September 18, 2026</p>
+          <ul>
+            <li>
+              This was a heavily requested feature, and it's finally here!
+            </li>
+            <li>
+              Any font from fonts.google.com can be used as a custom font for VRAM! Some fonts may break the formatting, please use at your own discretion.
+            </li>
+            <li>
+              The background color and the text color can be customized with and RGB slider or a hex input.
+            </li>
+            <li>
+              Any changes can be reset using the respective buttons.
+            </li>
+            <li>
+              The notifications panel now shows up on mobile.
+            </li>
+          </ul>
+        </div>
 
         <div class="changelog-entry">
           <h3>Notification Panel</h3>
