@@ -84,6 +84,44 @@ function readCssColor(variable) {
   };
 }
 
+function relativeLuminance({ r, g, b }) {
+  const toLinear = (value) => {
+    const srgb = value / 255;
+    return srgb <= 0.03928 ? srgb / 12.92 : ((srgb + 0.055) / 1.055) ** 2.4;
+  };
+
+  return 0.2126 * toLinear(r) + 0.7152 * toLinear(g) + 0.0722 * toLinear(b);
+}
+
+function contrastRatio(a, b) {
+  const luminanceA = relativeLuminance(a);
+  const luminanceB = relativeLuminance(b);
+
+  return (Math.max(luminanceA, luminanceB) + 0.05) / (Math.min(luminanceA, luminanceB) + 0.05);
+}
+
+// WCAG 2.x AA threshold for normal-sized text.
+const MIN_CONTRAST_RATIO = 4.5;
+
+function updateContrastWarning() {
+  const warning = document.getElementById("themeContrastWarning");
+  if (!warning) return;
+
+  const text = readCssColor("--text");
+  const background = readCssColor("--background");
+
+  const ratio = text && background ? contrastRatio(text, background) : 21;
+  const low = ratio < MIN_CONTRAST_RATIO;
+
+  warning.classList.toggle("hidden", !low);
+
+  if (low) {
+    warning.textContent =
+      `Low contrast (${ratio.toFixed(1)}:1), text may be hard to read. ` +
+      `WCAG recommends a ratio of at least ${MIN_CONTRAST_RATIO}:1.`;
+  }
+}
+
 function setGoogleFont(fontName, persist = true) {
   const name = fontName.trim();
 
@@ -100,15 +138,11 @@ function setGoogleFont(fontName, persist = true) {
 
   const encodedFamily = encodeURIComponent(name).replace(/%20/g, "+");
 
-  link.href =
-    `https://fonts.googleapis.com/css2?family=${encodedFamily}&display=swap`;
+  link.href = `https://fonts.googleapis.com/css2?family=${encodedFamily}&display=swap`;
 
   const safeName = name.replace(/["\\]/g, "");
 
-  root.style.setProperty(
-    "--font-family",
-    `"${safeName}", "Roboto Slab", Georgia, serif`
-  );
+  root.style.setProperty("--font-family", `"${safeName}", "Roboto Slab", Georgia, serif`);
 
   if (persist) {
     settings.font = name;
@@ -127,11 +161,7 @@ function resetGoogleFont() {
   if (fontInput) fontInput.value = "";
 }
 
-function setupColorControl({
-  key,
-  cssVariable,
-  prefix,
-}) {
+function setupColorControl({ key, cssVariable, prefix }) {
   const red = document.getElementById(`${prefix}R`);
   const green = document.getElementById(`${prefix}G`);
   const blue = document.getElementById(`${prefix}B`);
@@ -144,15 +174,7 @@ function setupColorControl({
   const preview = document.getElementById(`${prefix}Preview`);
   const resetButton = document.getElementById(`${prefix}Reset`);
 
-  if (
-    !red ||
-    !green ||
-    !blue ||
-    !hexInput ||
-    !redOutput ||
-    !greenOutput ||
-    !blueOutput
-  ) {
+  if (!red || !green || !blue || !hexInput || !redOutput || !greenOutput || !blueOutput) {
     return;
   }
 
@@ -182,6 +204,7 @@ function setupColorControl({
     saveSettings();
 
     syncControls(rgb);
+    updateContrastWarning();
   }
 
   function readSliders() {
@@ -224,6 +247,7 @@ function setupColorControl({
 
     requestAnimationFrame(() => {
       syncControls(readCssColor(cssVariable));
+      updateContrastWarning();
     });
   });
 
@@ -288,10 +312,7 @@ export function initThemeCustomizer() {
   });
 
   document.addEventListener("keydown", (event) => {
-    if (
-      event.key === "Escape" &&
-      !panel.classList.contains("hidden")
-    ) {
+    if (event.key === "Escape" && !panel.classList.contains("hidden")) {
       setOpen(false);
       toggle.focus();
     }
@@ -327,6 +348,8 @@ export function initThemeCustomizer() {
     prefix: "themeBackground",
   });
 
+  updateContrastWarning();
+
   resetAll?.addEventListener("click", () => {
     settings = {};
     localStorage.removeItem(STORAGE_KEY);
@@ -346,30 +369,29 @@ export function initThemeCustomizer() {
     });
   });
 
-
-
   resetLight?.addEventListener("click", () => {
     settings = {
       mode: "light",
     };
-  
+
     root.style.removeProperty("--text");
     root.style.removeProperty("--background");
     root.style.removeProperty("--font-family");
-  
+
     document.getElementById("customGoogleFont")?.remove();
-  
+
     root.setAttribute("data-theme", "light");
-  
+
     if (fontInput) {
       fontInput.value = "";
     }
-  
+
     saveSettings();
-  
+
     requestAnimationFrame(() => {
       updateColorControls("themeText", "#111111");
       updateColorControls("themeBackground", "#b3d4ef");
+      updateContrastWarning();
     });
   });
 
@@ -377,24 +399,25 @@ export function initThemeCustomizer() {
     settings = {
       mode: "dark",
     };
-  
+
     root.style.removeProperty("--text");
     root.style.removeProperty("--background");
     root.style.removeProperty("--font-family");
-  
+
     document.getElementById("customGoogleFont")?.remove();
-  
+
     root.setAttribute("data-theme", "dark");
-  
+
     if (fontInput) {
       fontInput.value = "";
     }
-  
+
     saveSettings();
-  
+
     requestAnimationFrame(() => {
       updateColorControls("themeText", "#e8eef6");
       updateColorControls("themeBackground", "#131f30");
+      updateContrastWarning();
     });
   });
 }

@@ -30,6 +30,8 @@ const DAY_CLASS = {
   "ER White": "day-white",
 };
 
+const FINAL_MINUTE_SECONDS = 60;
+
 const LINK_PATTERN = /\[([^\]]+)\]\(([^)]+)\)/g;
 const ALLOWED_LINK_PROTOCOLS = new Set(["http:", "https:", "mailto:"]);
 
@@ -43,6 +45,7 @@ function appendRichText(parent, text) {
     if (match.index > cursor) parent.append(text.slice(cursor, match.index));
 
     let url = null;
+
     try {
       url = new URL(match[2]);
     } catch {
@@ -211,6 +214,11 @@ function beginRename(item, nameSpan) {
 }
 
 export function renderDayMessage(now) {
+  if (elements.dayMessage?.classList.contains("loading")) {
+    elements.dayMessage.classList.remove("loading");
+    elements.dayMessage.removeAttribute("aria-busy");
+  }
+
   const info = getDisplayDayInfo(now);
   if (!info.type) return setText(elements.dayMessage, "No school.");
 
@@ -239,8 +247,19 @@ export function setProgress(progress) {
   const percent = Math.round(normalized * 100);
   const degrees = Math.round(normalized * 36000) / 100;
 
-  if (degrees !== lastProgressDegrees)
-    elements.progressRing?.style.setProperty("--progress", `${degrees}deg`);
+  if (degrees !== lastProgressDegrees) {
+    const ring = elements.progressRing;
+
+    if (ring && lastProgressDegrees !== undefined && degrees < lastProgressDegrees) {
+      ring.classList.add("no-anim");
+      ring.style.setProperty("--progress", `${degrees}deg`);
+      void ring.offsetWidth;
+      ring.classList.remove("no-anim");
+    } else {
+      ring?.style.setProperty("--progress", `${degrees}deg`);
+    }
+  }
+
   if (percent !== lastProgressPercent) {
     elements.progressRing?.setAttribute("aria-valuenow", String(percent));
     setText(elements.progressPercent, `${percent}%`);
@@ -297,9 +316,16 @@ function updateLunch(type, current, seconds) {
   }
 }
 
+function setEndingEmphasis(enabled) {
+  elements.countdown?.classList.toggle("ending", enabled);
+  elements.progressRing?.classList.toggle("ending", enabled);
+}
+
 export function updateMainTracker(now) {
   const type = getDayType(now);
   const seconds = secondsIntoDay(now);
+
+  setEndingEmphasis(false);
 
   if (!type) {
     setText(elements.currentPeriod, "No school today");
@@ -338,6 +364,8 @@ export function updateMainTracker(now) {
 
     return;
   }
+
+  setEndingEmphasis(current.endSeconds - seconds <= FINAL_MINUTE_SECONDS);
 
   setText(elements.currentPeriod, displayName(current));
   setText(elements.countdown, formatDuration(current.endSeconds - seconds));

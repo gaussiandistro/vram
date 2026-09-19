@@ -49,7 +49,6 @@ elements.clockToggle?.addEventListener("click", () => {
   renderSchedule(currentDateTime(), true);
 });
 
-
 elements.scheduleToggle?.addEventListener("click", () => {
   const open = elements.schedulePanel?.classList.contains("hidden") ?? false;
   if (open) renderSchedule(currentDateTime(), true);
