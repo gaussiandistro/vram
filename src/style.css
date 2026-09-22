@@ -336,6 +336,33 @@ textarea {
   place-items: center;
 }
 
+.theme-option {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 0;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.theme-option input {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--blue-day);
+}
+
+.theme-option + .theme-option {
+  border-top: 1px solid var(--row-border);
+}
+
+.theme-option-active span {
+  font-weight: 700;
+}
+
+.theme-type-options.off .theme-option {
+  opacity: 0.55;
+}
+
 .progress-ring {
   --progress: 0deg;
   width: 190px;

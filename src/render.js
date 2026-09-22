@@ -96,6 +96,7 @@ export const elements = {
   dayMessage: byId("dayMessage"),
   currentPeriod: byId("currentPeriod"),
   countdown: byId("countdown"),
+  pulseEnable: byId("pulseEnable"),
   progressRing: byId("progressRing"),
   progressPercent: byId("progressPercent"),
   periodTimes: byId("periodTimes"),
@@ -317,8 +318,10 @@ function updateLunch(type, current, seconds) {
 }
 
 function setEndingEmphasis(enabled) {
-  elements.countdown?.classList.toggle("ending", enabled);
-  elements.progressRing?.classList.toggle("ending", enabled);
+  if (elements.pulseEnable.checked) {
+    elements.countdown?.classList.toggle("ending", enabled);
+    elements.progressRing?.classList.toggle("ending", enabled);
+  }
 }
 
 export function updateMainTracker(now) {
