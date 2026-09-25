@@ -1,23 +1,9 @@
-const STORAGE_KEY = "vram-theme-settings";
+import { getThemeSettings, replaceThemeSettings, updateThemeSettings } from "./theme.js";
 
 const root = document.documentElement;
 
 const resetLight = document.getElementById("themeResetLight");
 const resetDark = document.getElementById("themeResetDark");
-
-let settings = loadSettings();
-
-function loadSettings() {
-  try {
-    return JSON.parse(localStorage.getItem(STORAGE_KEY)) ?? {};
-  } catch {
-    return {};
-  }
-}
-
-function saveSettings() {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(settings));
-}
 
 function normalizeHex(value) {
   let hex = value.trim();
@@ -145,8 +131,7 @@ function setGoogleFont(fontName, persist = true) {
   root.style.setProperty("--font-family", `"${safeName}", "Roboto Slab", Georgia, serif`);
 
   if (persist) {
-    settings.font = name;
-    saveSettings();
+    updateThemeSettings({ font: name });
   }
 }
 
@@ -154,8 +139,7 @@ function resetGoogleFont() {
   root.style.removeProperty("--font-family");
   document.getElementById("customGoogleFont")?.remove();
 
-  delete settings.font;
-  saveSettings();
+  updateThemeSettings({ font: null });
 
   const fontInput = document.getElementById("themeFont");
   if (fontInput) fontInput.value = "";
@@ -171,6 +155,7 @@ function setupColorControl({ key, cssVariable, prefix }) {
   const blueOutput = document.getElementById(`${prefix}BOutput`);
 
   const hexInput = document.getElementById(`${prefix}Hex`);
+  const swatch = document.getElementById(`${prefix}Swatch`);
   const preview = document.getElementById(`${prefix}Preview`);
   const resetButton = document.getElementById(`${prefix}Reset`);
 
@@ -190,6 +175,8 @@ function setupColorControl({ key, cssVariable, prefix }) {
     const hex = rgbToHex(rgb);
     hexInput.value = hex;
 
+    if (swatch) swatch.value = hex;
+
     if (preview) {
       preview.style.backgroundColor = hex;
     }
@@ -200,8 +187,7 @@ function setupColorControl({ key, cssVariable, prefix }) {
 
     root.style.setProperty(cssVariable, hex);
 
-    settings[key] = hex;
-    saveSettings();
+    updateThemeSettings({ [key]: hex });
 
     syncControls(rgb);
     updateContrastWarning();
@@ -239,11 +225,16 @@ function setupColorControl({ key, cssVariable, prefix }) {
     }
   });
 
+  swatch?.addEventListener("input", () => {
+    const rgb = hexToRgb(swatch.value);
+
+    if (rgb) applyRgb(rgb);
+  });
+
   resetButton?.addEventListener("click", () => {
     root.style.removeProperty(cssVariable);
 
-    delete settings[key];
-    saveSettings();
+    updateThemeSettings({ [key]: null });
 
     requestAnimationFrame(() => {
       syncControls(readCssColor(cssVariable));
@@ -255,25 +246,88 @@ function setupColorControl({ key, cssVariable, prefix }) {
 }
 
 function applyStoredSettings() {
-  if (settings.mode) {
-    root.setAttribute("data-theme", settings.mode);
+  if (getThemeSettings().mode) {
+    root.setAttribute("data-theme", getThemeSettings().mode);
   }
 
-  if (settings.textColor) {
-    root.style.setProperty("--text", settings.textColor);
+  if (getThemeSettings().textColor) {
+    root.style.setProperty("--text", getThemeSettings().textColor);
   }
 
-  if (settings.backgroundColor) {
-    root.style.setProperty("--background", settings.backgroundColor);
+  if (getThemeSettings().backgroundColor) {
+    root.style.setProperty("--background", getThemeSettings().backgroundColor);
   }
 
-  if (settings.font) {
-    setGoogleFont(settings.font, false);
+  if (getThemeSettings().font) {
+    setGoogleFont(getThemeSettings().font, false);
+  }
+}
+
+function syncEndingEmphasisControl() {
+  const checkbox = document.getElementById("endingEmphasis");
+  if (!checkbox) return;
+
+  checkbox.checked = getThemeSettings().endingEmphasis !== false;
+
+  checkbox.addEventListener("change", () => {
+    updateThemeSettings({ endingEmphasis: checkbox.checked });
+  });
+}
+
+function resetColorsAndFont() {
+  root.style.removeProperty("--text");
+  root.style.removeProperty("--background");
+  root.style.removeProperty("--font-family");
+
+  document.getElementById("customGoogleFont")?.remove();
+
+  const fontInput = document.getElementById("themeFont");
+  if (fontInput) fontInput.value = "";
+}
+
+function syncColorControlsAfterReset(prefix, hex) {
+  const rgb = hexToRgb(hex);
+  if (!rgb) return;
+
+  const red = document.getElementById(`${prefix}R`);
+  const green = document.getElementById(`${prefix}G`);
+  const blue = document.getElementById(`${prefix}B`);
+
+  const redOutput = document.getElementById(`${prefix}ROutput`);
+  const greenOutput = document.getElementById(`${prefix}GOutput`);
+  const blueOutput = document.getElementById(`${prefix}BOutput`);
+
+  const hexInput = document.getElementById(`${prefix}Hex`);
+  const swatch = document.getElementById(`${prefix}Swatch`);
+  const preview = document.getElementById(`${prefix}Preview`);
+
+  const values = {
+    r: rgb.r,
+    g: rgb.g,
+    b: rgb.b,
+  };
+
+  if (red) red.value = values.r;
+  if (green) green.value = values.g;
+  if (blue) blue.value = values.b;
+
+  if (redOutput) redOutput.value = values.r;
+  if (greenOutput) greenOutput.value = values.g;
+  if (blueOutput) blueOutput.value = values.b;
+
+  const resolvedHex = rgbToHex(values);
+
+  if (hexInput) hexInput.value = resolvedHex;
+  if (swatch) swatch.value = resolvedHex;
+
+  if (preview) {
+    preview.style.backgroundColor = resolvedHex;
   }
 }
 
 export function initThemeCustomizer() {
   applyStoredSettings();
+  syncEndingEmphasisControl();
 
   const toggle = document.getElementById("themeCustomizerToggle");
   const panel = document.getElementById("themeCustomizerPanel");
@@ -283,12 +337,10 @@ export function initThemeCustomizer() {
   const fontApply = document.getElementById("themeFontApply");
   const fontReset = document.getElementById("themeFontReset");
 
-  const resetAll = document.getElementById("themeResetAll");
-
   if (!panel || !toggle) return;
 
-  if (settings.font && fontInput) {
-    fontInput.value = settings.font;
+  if (getThemeSettings().font && fontInput) {
+    fontInput.value = getThemeSettings().font;
   }
 
   function setOpen(open) {
@@ -350,104 +402,31 @@ export function initThemeCustomizer() {
 
   updateContrastWarning();
 
-  resetAll?.addEventListener("click", () => {
-    settings = {};
-    localStorage.removeItem(STORAGE_KEY);
-
-    root.style.removeProperty("--text");
-    root.style.removeProperty("--background");
-    root.style.removeProperty("--font-family");
-
-    document.getElementById("customGoogleFont")?.remove();
-
-    if (fontInput) {
-      fontInput.value = "";
-    }
-
-    requestAnimationFrame(() => {
-      location.reload();
-    });
-  });
-
   resetLight?.addEventListener("click", () => {
-    settings = {
-      mode: "light",
-    };
+    replaceThemeSettings({ mode: "light", endingEmphasis: getThemeSettings().endingEmphasis });
 
-    root.style.removeProperty("--text");
-    root.style.removeProperty("--background");
-    root.style.removeProperty("--font-family");
-
-    document.getElementById("customGoogleFont")?.remove();
+    resetColorsAndFont();
 
     root.setAttribute("data-theme", "light");
 
-    if (fontInput) {
-      fontInput.value = "";
-    }
-
-    saveSettings();
-
     requestAnimationFrame(() => {
-      updateColorControls("themeText", "#111111");
-      updateColorControls("themeBackground", "#b3d4ef");
+      syncColorControlsAfterReset("themeText", "#111111");
+      syncColorControlsAfterReset("themeBackground", "#b3d4ef");
       updateContrastWarning();
     });
   });
 
   resetDark?.addEventListener("click", () => {
-    settings = {
-      mode: "dark",
-    };
+    replaceThemeSettings({ mode: "dark", endingEmphasis: getThemeSettings().endingEmphasis });
 
-    root.style.removeProperty("--text");
-    root.style.removeProperty("--background");
-    root.style.removeProperty("--font-family");
-
-    document.getElementById("customGoogleFont")?.remove();
+    resetColorsAndFont();
 
     root.setAttribute("data-theme", "dark");
 
-    if (fontInput) {
-      fontInput.value = "";
-    }
-
-    saveSettings();
-
     requestAnimationFrame(() => {
-      updateColorControls("themeText", "#e8eef6");
-      updateColorControls("themeBackground", "#131f30");
+      syncColorControlsAfterReset("themeText", "#e8eef6");
+      syncColorControlsAfterReset("themeBackground", "#131f30");
       updateContrastWarning();
     });
   });
-}
-
-function updateColorControls(prefix, hex) {
-  const rgb = hexToRgb(hex);
-  if (!rgb) return;
-
-  const red = document.getElementById(`${prefix}R`);
-  const green = document.getElementById(`${prefix}G`);
-  const blue = document.getElementById(`${prefix}B`);
-
-  const redOutput = document.getElementById(`${prefix}ROutput`);
-  const greenOutput = document.getElementById(`${prefix}GOutput`);
-  const blueOutput = document.getElementById(`${prefix}BOutput`);
-
-  const hexInput = document.getElementById(`${prefix}Hex`);
-  const preview = document.getElementById(`${prefix}Preview`);
-
-  if (red) red.value = rgb.r;
-  if (green) green.value = rgb.g;
-  if (blue) blue.value = rgb.b;
-
-  if (redOutput) redOutput.value = rgb.r;
-  if (greenOutput) greenOutput.value = rgb.g;
-  if (blueOutput) blueOutput.value = rgb.b;
-
-  if (hexInput) hexInput.value = hex;
-
-  if (preview) {
-    preview.style.backgroundColor = hex;
-  }
 }

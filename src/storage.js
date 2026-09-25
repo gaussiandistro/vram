@@ -13,3 +13,11 @@ export function saveStorage(key, value) {
     // no error handling here
   }
 }
+
+export function removeStorage(key) {
+  try {
+    localStorage.removeItem(key);
+  } catch {
+    // no error handling here
+  }
+}

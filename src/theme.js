@@ -1,42 +1,48 @@
-import { loadStorage, saveStorage } from "./storage.js";
+import { loadStorage, removeStorage, saveStorage } from "./storage.js";
 
-const THEME_STORAGE_KEY = "vram-theme";
+const THEME_SETTINGS_STORAGE_KEY = "vram-theme-settings";
+const LEGACY_THEME_STORAGE_KEY = "vram-theme";
 
 const THEMES = new Set(["light", "dark"]);
 
-function systemTheme() {
-  return window.matchMedia?.("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+function loadSettings() {
+  let parsed = null;
+
+  try {
+    const stored = JSON.parse(loadStorage(THEME_SETTINGS_STORAGE_KEY));
+    if (stored && typeof stored === "object") parsed = stored;
+  } catch {
+    // No error handling here
+  }
+
+  // this is just a one-item migration from the legacy storage key
+  if (!parsed?.mode) {
+    const legacy = loadStorage(LEGACY_THEME_STORAGE_KEY);
+    if (THEMES.has(legacy)) parsed = { ...parsed, mode: legacy };
+  }
+
+  return parsed || {};
 }
 
-function applyStoredTheme() {
-  const stored = loadStorage(THEME_STORAGE_KEY);
-  if (THEMES.has(stored || "")) document.documentElement.dataset.theme = stored;
+let settings = loadSettings();
+
+function persistSettings() {
+  saveStorage(THEME_SETTINGS_STORAGE_KEY, JSON.stringify(settings));
+  removeStorage(LEGACY_THEME_STORAGE_KEY);
 }
 
-applyStoredTheme();
+if (loadStorage(LEGACY_THEME_STORAGE_KEY)) persistSettings();
 
-function activeTheme() {
-  return document.documentElement.dataset.theme || systemTheme();
+export function getThemeSettings() {
+  return settings;
 }
 
-export function currentTheme() {
-  return activeTheme();
+export function updateThemeSettings(patch) {
+  settings = { ...settings, ...patch };
+  persistSettings();
 }
 
-export function toggleTheme() {
-  const next = activeTheme() === "dark" ? "light" : "dark";
-
-  document.documentElement.dataset.theme = next;
-  saveStorage(THEME_STORAGE_KEY, next);
-
-  return next;
+export function replaceThemeSettings(next) {
+  settings = next && typeof next === "object" ? next : {};
+  persistSettings();
 }
-
-window.matchMedia?.("(prefers-color-scheme: dark)").addEventListener("change", () => {
-  if (!THEMES.has(document.documentElement.dataset.theme || "")) return;
-
-  const stored = loadStorage(THEME_STORAGE_KEY);
-  if (THEMES.has(stored || "")) return;
-
-  delete document.documentElement.dataset.theme;
-});

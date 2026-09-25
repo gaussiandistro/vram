@@ -1274,6 +1274,33 @@ textarea {
   font-family: monospace;
 }
 
+.color-swatch {
+  width: 34px;
+  height: 34px;
+  padding: 2px;
+
+  border: 2px solid var(--border);
+  border-radius: 8px;
+
+  background: var(--field);
+
+  cursor: pointer;
+}
+
+.color-swatch::-webkit-color-swatch-wrapper {
+  padding: 0;
+}
+
+.color-swatch::-webkit-color-swatch {
+  border: none;
+  border-radius: 4px;
+}
+
+.color-swatch::-moz-color-swatch {
+  border: none;
+  border-radius: 4px;
+}
+
 .theme-reset-button {
   padding: 6px 10px;
   font-size: 12px;

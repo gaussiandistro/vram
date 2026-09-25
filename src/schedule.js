@@ -1,7 +1,7 @@
 import { getLunchChoice } from "./lunchChoice.js";
 import { getCustomName } from "./periodNames.js";
 import { supabase } from "./supabase.js";
-import { dateKey, secondsIntoDay, timeFromSeconds } from "./time.js";
+import { dateKey, secondsFromTime, secondsIntoDay, timeFromSeconds } from "./time.js";
 
 const DEFAULT_WEEK_PATTERN = { 1: "Blue", 2: "White", 3: "RAM", 4: "Blue", 5: "White" };
 
@@ -12,11 +12,6 @@ let schedules = {};
 let lunches = {};
 let schoolEndSeconds = {};
 let displaySchedules = {};
-
-function secondsFromTime(time) {
-  const [hours, minutes] = time.split(":").map(Number);
-  return (hours * 60 + minutes) * 60;
-}
 
 export function rebuildScheduleIndexes() {
   schoolEndSeconds = Object.fromEntries(
@@ -244,10 +239,6 @@ export function getCurrentPeriod(type, seconds) {
       (period) => seconds >= period.startSeconds && seconds < period.endSeconds
     ) || null
   );
-}
-
-export function getNextPeriod(type, seconds) {
-  return schedules[type]?.find((period) => period.startSeconds > seconds) || null;
 }
 
 export function displayName(block) {

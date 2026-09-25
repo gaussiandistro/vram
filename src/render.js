@@ -1,5 +1,5 @@
 import { clockFormat, currentDateTime, simulatedNow } from "./clock.js";
-import { currentTheme } from "./theme.js";
+import { getThemeSettings } from "./theme.js";
 import {
   displayName,
   getDayType,
@@ -92,11 +92,9 @@ const byId = (id) => document.getElementById(id);
 
 export const elements = {
   dailyMessage: byId("dailyMessage"),
-  themeToggle: byId("themeToggle"),
   dayMessage: byId("dayMessage"),
   currentPeriod: byId("currentPeriod"),
   countdown: byId("countdown"),
-  pulseEnable: byId("pulseEnable"),
   progressRing: byId("progressRing"),
   progressPercent: byId("progressPercent"),
   periodTimes: byId("periodTimes"),
@@ -318,10 +316,10 @@ function updateLunch(type, current, seconds) {
 }
 
 function setEndingEmphasis(enabled) {
-  if (elements.pulseEnable.checked) {
-    elements.countdown?.classList.toggle("ending", enabled);
-    elements.progressRing?.classList.toggle("ending", enabled);
-  }
+  const emphasis = enabled && getThemeSettings().endingEmphasis !== false;
+
+  elements.countdown?.classList.toggle("ending", emphasis);
+  elements.progressRing?.classList.toggle("ending", emphasis);
 }
 
 export function updateMainTracker(now) {
@@ -343,6 +341,16 @@ export function updateMainTracker(now) {
 
   if (!current) {
     const first = getSchedule(type)[0];
+
+    if (!first) {
+      setText(elements.currentPeriod, "No schedule available");
+      setText(elements.countdown, "--:--:--");
+      setText(elements.periodTimes, "");
+      setProgress(0);
+      setHidden(elements.lunchSection, true);
+      return;
+    }
+
     const next =
       getPersonalizedDisplaySchedule(type).find((item) => item.startSeconds > seconds) || null;
 
@@ -473,13 +481,6 @@ export function renderSchedule(now, force = false) {
 export function updateClockToggleLabel() {
   setText(elements.clockToggle, clockFormat === "12" ? "24h" : "12h");
   elements.clockToggle?.setAttribute("aria-pressed", String(clockFormat === "24"));
-}
-
-export function updateThemeToggle() {
-  const label = `Switch to ${currentTheme() === "dark" ? "light" : "dark"} theme`;
-
-  elements.themeToggle?.setAttribute("aria-label", label);
-  if (elements.themeToggle) elements.themeToggle.title = label;
 }
 
 export function updateNotificationUI() {
