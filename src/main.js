@@ -4,7 +4,7 @@ import {
   applySimulatedTime,
   currentDateTime,
   resetSimulatedTime,
-  toggleClockFormat,
+  setClockFormat,
 } from "./clock.js";
 
 import { logError } from "./logger.js";
@@ -26,8 +26,7 @@ import {
   renderDailyMessage,
   renderDayMessage,
   renderSchedule,
-  toggleNotifPanel,
-  updateClockToggleLabel,
+  updateClockFormatControl,
   updateDevStatus,
   updateMainTracker,
   updateNotificationUI,
@@ -39,12 +38,11 @@ import { initThemeCustomizer } from "./themeCustomizer.js";
 
 import { toInputDate, toInputTime } from "./time.js";
 
-updateClockToggleLabel();
+updateClockFormatControl();
 initThemeCustomizer();
 
-elements.clockToggle?.addEventListener("click", () => {
-  toggleClockFormat();
-  updateClockToggleLabel();
+elements.clockFormatToggle?.addEventListener("change", () => {
+  setClockFormat(elements.clockFormatToggle.checked ? "24" : "12");
   updateEverything();
   renderSchedule(currentDateTime(), true);
 });
@@ -74,8 +72,6 @@ const NOTIF_CHECKBOXES = [
   [elements.notifLunchEnd, "lunchEnd"],
   [elements.notifUpcoming, "upcoming"],
 ];
-
-elements.notifToggle?.addEventListener("click", toggleNotifPanel);
 
 elements.notifEnable?.addEventListener("change", async () => {
   if (!elements.notifEnable.checked) {

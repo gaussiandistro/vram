@@ -83,6 +83,43 @@
           <input id="endingEmphasis" type="checkbox" checked />
           <span>Highlight the last minute of a period (glow + pulse)</span>
         </label>
+
+        <label class="theme-option" for="clockFormatToggle">
+          <input id="clockFormatToggle" type="checkbox" />
+          <span>Use 24-hour time</span>
+        </label>
+      </section>
+
+      <section id="notifSection" class="theme-control-section">
+        <div class="theme-control-title">
+          <strong>Notifications</strong>
+        </div>
+
+        <p id="notifHint" class="notif-hint"></p>
+
+        <div id="notifOptions" class="notif-options">
+          <label class="notif-option" id="notifEnableOption">
+            <input id="notifEnable" type="checkbox" />
+            <span>Enable notifications</span>
+          </label>
+
+          <div id="notifTypeOptions" class="notif-type-options">
+            <label class="notif-option">
+              <input id="notifPeriodEnd" type="checkbox" checked />
+              <span>Notify when a period ends</span>
+            </label>
+
+            <label class="notif-option">
+              <input id="notifLunchEnd" type="checkbox" checked />
+              <span>Notify when lunch ends</span>
+            </label>
+
+            <label class="notif-option">
+              <input id="notifUpcoming" type="checkbox" checked />
+              <span>Also remind me 2 minutes before</span>
+            </label>
+          </div>
+        </div>
       </section>
 
       <section class="theme-control-section">
@@ -219,6 +256,10 @@
         Reset to Light Mode
       </button>
       <button id="themeResetDark" class="theme-reset-dark" type="button">Reset to Dark Mode</button>
+
+      <button id="themeResetAll" class="theme-reset-all danger" type="button">
+        Reset all settings
+      </button>
     </aside>
 
     <section id="dailyMessage" class="daily-message" aria-labelledby="dailyMessageTitle">
@@ -287,20 +328,6 @@
           >
             Show Schedule
           </button>
-
-          <button
-            id="notifToggle"
-            class="clock-toggle"
-            type="button"
-            aria-controls="notifSection"
-            aria-expanded="false"
-          >
-            Show Notification Panel
-          </button>
-
-          <button id="clockToggle" class="clock-toggle" type="button" aria-pressed="false">
-            24h
-          </button>
         </div>
       </section>
 
@@ -325,35 +352,6 @@
             <div id="lunchCTitle" class="lunch-title">C Lunch</div>
             <div id="lunchCTimer" class="lunch-timer">--:--</div>
             <div id="lunchCStatus" class="lunch-status"></div>
-          </div>
-        </div>
-      </section>
-
-      <!-- Notifications -->
-      <section id="notifSection" class="notif-section">
-        <p id="notifHint" class="notif-hint hidden"></p>
-
-        <div id="notifOptions" class="notif-options hidden">
-          <label class="notif-option" id="notifEnableOption">
-            <input id="notifEnable" type="checkbox" />
-            <span>Enable notifications</span>
-          </label>
-
-          <div id="notifTypeOptions" class="notif-type-options">
-            <label class="notif-option">
-              <input id="notifPeriodEnd" type="checkbox" checked />
-              <span>Notify when a period ends</span>
-            </label>
-
-            <label class="notif-option">
-              <input id="notifLunchEnd" type="checkbox" checked />
-              <span>Notify when lunch ends</span>
-            </label>
-
-            <label class="notif-option">
-              <input id="notifUpcoming" type="checkbox" checked />
-              <span>Also remind me 2 minutes before</span>
-            </label>
           </div>
         </div>
       </section>
@@ -446,6 +444,21 @@
         </div>
         <br />
         <h2 id="changelogTitle">Changelog</h2>
+
+        <div class="changelog-entry">
+          <h3>Settings Cleanup</h3>
+          <p class="changelog-date">October 3, 2026</p>
+          <ul>
+            <li>
+              Moved the 24-hour time toggle and all notification controls into the settings panel.
+            </li>
+            <li>The tracker now shows just the schedule button, keeping the main page minimal.</li>
+            <li>
+              Added a "Reset all settings" button to the settings panel, with a confirmation prompt
+              before anything is wiped.
+            </li>
+          </ul>
+        </div>
 
         <div class="changelog-entry">
           <h3>UI Polish</h3>
@@ -619,6 +632,30 @@
               version upload.
             </li>
           </ul>
+        </div>
+      </section>
+    </div>
+
+    <div id="resetConfirmOverlay" class="changelog-overlay hidden">
+      <section
+        class="changelog-modal confirm-modal"
+        role="alertdialog"
+        aria-modal="true"
+        aria-labelledby="resetConfirmTitle"
+        aria-describedby="resetConfirmText"
+      >
+        <h2 id="resetConfirmTitle">Reset all settings?</h2>
+
+        <p id="resetConfirmText" class="confirm-text">
+          This restores everything to its defaults: theme and font, 24-hour time, notifications,
+          lunch choices, and custom period names. This can't be undone.
+        </p>
+
+        <div class="confirm-actions">
+          <button id="resetConfirmCancel" class="clock-toggle" type="button">Cancel</button>
+          <button id="resetConfirmAccept" class="clock-toggle danger" type="button">
+            Reset everything
+          </button>
         </div>
       </section>
     </div>

@@ -10,8 +10,8 @@ export function saveClockFormat() {
   saveStorage(CLOCK_STORAGE_KEY, clockFormat);
 }
 
-export function toggleClockFormat() {
-  clockFormat = clockFormat === "12" ? "24" : "12";
+export function setClockFormat(format) {
+  clockFormat = format === "24" ? "24" : "12";
   saveClockFormat();
 }
 

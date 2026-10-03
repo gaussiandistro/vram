@@ -409,39 +409,18 @@ textarea {
 }
 
 .lunch-section,
-.notif-section,
 .schedule-section {
   margin-top: 30px;
 }
 
 .notif-hint {
-  max-width: 460px;
-  margin: 6px auto 0;
+  margin: 0 0 6px;
   font-size: 12px;
-  opacity: 0.65;
-  text-align: center;
-}
-
-.notif-section h2 {
-  margin: 0 0 18px;
-  text-align: center;
-  font-size: 32px;
-}
-
-.notif-hint {
-  max-width: 460px;
-  margin: 14px auto 0;
-  font-size: 14px;
-  opacity: 0.75;
+  line-height: 1.4;
+  opacity: 0.7;
 }
 
 .notif-options {
-  max-width: 460px;
-  margin: 18px auto 0;
-  padding: 6px 18px;
-  border: 2px solid var(--border);
-  border-radius: 14px;
-  background: var(--card);
   text-align: left;
 }
 
@@ -458,6 +437,10 @@ textarea {
   width: 18px;
   height: 18px;
   accent-color: var(--blue-day);
+}
+
+.notif-option input:disabled {
+  cursor: not-allowed;
 }
 
 .notif-option + .notif-option {
@@ -1325,4 +1308,35 @@ textarea {
     width: calc(100vw - 16px);
     max-height: calc(100svh - 64px);
   }
+}
+
+.confirm-modal {
+  width: min(440px, 100%);
+  max-height: none;
+}
+
+.confirm-modal h2 {
+  margin: 0 0 12px;
+}
+
+.confirm-text {
+  margin: 0 0 20px;
+  font-size: 15px;
+  line-height: 1.5;
+}
+
+.confirm-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.danger {
+  border-color: #d10000;
+  background: #d10000;
+  color: #ffffff;
+}
+
+.danger:hover {
+  background: #b70000;
 }

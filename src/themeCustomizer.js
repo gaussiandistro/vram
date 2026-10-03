@@ -1,9 +1,15 @@
+import { INSTALLATION_STORAGE_KEY, resetNotificationSettings } from "./notifications.js";
+import { clearStoredSettings } from "./storage.js";
 import { getThemeSettings, replaceThemeSettings, updateThemeSettings } from "./theme.js";
 
 const root = document.documentElement;
 
 const resetLight = document.getElementById("themeResetLight");
 const resetDark = document.getElementById("themeResetDark");
+const resetAll = document.getElementById("themeResetAll");
+const resetConfirmOverlay = document.getElementById("resetConfirmOverlay");
+const resetConfirmCancel = document.getElementById("resetConfirmCancel");
+const resetConfirmAccept = document.getElementById("resetConfirmAccept");
 
 function normalizeHex(value) {
   let hex = value.trim();
@@ -363,8 +369,48 @@ export function initThemeCustomizer() {
     toggle.focus();
   });
 
+  function openResetConfirm() {
+    resetConfirmOverlay?.classList.remove("hidden");
+    resetConfirmCancel?.focus();
+  }
+
+  function closeResetConfirm() {
+    resetConfirmOverlay?.classList.add("hidden");
+    resetAll?.focus();
+  }
+
+  async function resetAllSettings() {
+    await Promise.race([
+      resetNotificationSettings(),
+      new Promise((resolve) => setTimeout(resolve, 3000)),
+    ]);
+
+    clearStoredSettings([INSTALLATION_STORAGE_KEY]);
+    window.location.reload();
+  }
+
+  resetAll?.addEventListener("click", openResetConfirm);
+
+  resetConfirmCancel?.addEventListener("click", closeResetConfirm);
+
+  resetConfirmOverlay?.addEventListener("click", (event) => {
+    if (event.target === resetConfirmOverlay) closeResetConfirm();
+  });
+
+  resetConfirmAccept?.addEventListener("click", () => {
+    resetConfirmAccept.disabled = true;
+    void resetAllSettings();
+  });
+
   document.addEventListener("keydown", (event) => {
-    if (event.key === "Escape" && !panel.classList.contains("hidden")) {
+    if (event.key !== "Escape") return;
+
+    if (resetConfirmOverlay && !resetConfirmOverlay.classList.contains("hidden")) {
+      closeResetConfirm();
+      return;
+    }
+
+    if (!panel.classList.contains("hidden")) {
       setOpen(false);
       toggle.focus();
     }

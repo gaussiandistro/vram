@@ -21,3 +21,17 @@ export function removeStorage(key) {
     // no error handling here
   }
 }
+
+export function clearStoredSettings(preserveKeys = []) {
+  const preserve = new Set(preserveKeys);
+
+  try {
+    for (const key of Object.keys(localStorage)) {
+      if (key.startsWith("vram-") && !preserve.has(key)) {
+        localStorage.removeItem(key);
+      }
+    }
+  } catch {
+    // no error handling here
+  }
+}

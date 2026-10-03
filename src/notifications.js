@@ -3,7 +3,8 @@ import { loadStorage, saveStorage } from "./storage.js";
 import { logError } from "./logger.js";
 
 const NOTIF_STORAGE_KEY = "vram-notifs";
-const INSTALLATION_STORAGE_KEY = "vram-installation-id";
+
+export const INSTALLATION_STORAGE_KEY = "vram-installation-id";
 
 export const DEFAULT_NOTIF_SETTINGS = {
   enabled: false,
@@ -29,7 +30,7 @@ function loadNotifSettings() {
 export function saveNotifSettings() {
   saveStorage(NOTIF_STORAGE_KEY, JSON.stringify(notifSettings));
 
-  void syncNotificationPreferences().catch((error) => {
+  return syncNotificationPreferences().catch((error) => {
     logError("Failed to sync notification preferences.", error);
   });
 }
@@ -156,4 +157,14 @@ export async function enableNotifications() {
 export function disableNotifications() {
   notifSettings.enabled = false;
   saveNotifSettings();
+}
+
+export async function resetNotificationSettings() {
+  notifSettings = { ...DEFAULT_NOTIF_SETTINGS };
+
+  try {
+    await saveNotifSettings();
+  } catch {
+    // no error handling here
+  }
 }
