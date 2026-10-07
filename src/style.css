@@ -1354,16 +1354,18 @@ textarea {
 .marquee p {
   display: inline-block;
   white-space: nowrap;
-  padding-left: 100%;
-  animation: scroll-left 15s linear infinite;
+  margin: 0;
+
+  animation: scroll-left 35s linear infinite;
 }
 
 @keyframes scroll-left {
-  from {
+  0%,
+  14.3% {
     transform: translateX(0);
   }
 
-  to {
+  100% {
     transform: translateX(-100%);
   }
 }
