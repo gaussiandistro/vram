@@ -346,6 +346,7 @@ textarea {
 }
 
 .theme-option input {
+  flex-shrink: 0;
   width: 18px;
   height: 18px;
   accent-color: var(--blue-day);
@@ -1349,6 +1350,7 @@ textarea {
 .marquee {
   width: 100%;
   overflow: hidden;
+  container-type: inline-size;
 }
 
 .marquee p {
@@ -1356,16 +1358,25 @@ textarea {
   white-space: nowrap;
   margin: 0;
 
-  animation: scroll-left 35s linear infinite;
+  animation: scroll-left 40s linear infinite;
 }
 
 @keyframes scroll-left {
   0%,
-  14.3% {
+  12.5% {
     transform: translateX(0);
   }
 
+  56.25% {
+    transform: translateX(calc(-50cqw - 50%));
+  }
+
+  /* Reset offscreen, then slide back in from the right. */
+  56.2501% {
+    transform: translateX(calc(50cqw + 50%));
+  }
+
   100% {
-    transform: translateX(-100%);
+    transform: translateX(0);
   }
 }
