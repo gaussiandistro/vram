@@ -71,6 +71,32 @@ function appendRichText(parent, text) {
 
 const BANNER_SCROLLING_CLASS = "daily-message--scrolling";
 const BANNER_SCROLL_SPEED_PX_PER_SEC = 60;
+const BANNER_START_PAUSE_SECONDS = 5;
+
+// The ticker keyframes are generated at runtime so the message can hold still
+// for BANNER_START_PAUSE_SECONDS at its start on every loop while the scroll
+// itself keeps a constant speed.
+const bannerKeyframesStyle = document.createElement("style");
+
+document.head.append(bannerKeyframesStyle);
+
+function applyBannerKeyframes(scrollSeconds) {
+  const totalSeconds = scrollSeconds + BANNER_START_PAUSE_SECONDS;
+  const holdPercent = ((BANNER_START_PAUSE_SECONDS / totalSeconds) * 100).toFixed(2);
+
+  bannerKeyframesStyle.textContent = `@keyframes banner-ticker {
+  0%,
+  ${holdPercent}% {
+    transform: translateX(0);
+  }
+
+  100% {
+    transform: translateX(-50%);
+  }
+}`;
+
+  return totalSeconds;
+}
 
 // Second, visual-only copy of the message so the ticker loops seamlessly.
 function ensureBannerCopy(track, message) {
@@ -109,8 +135,10 @@ function updateDailyMessageMotion() {
     return;
   }
 
-  const seconds = Math.max(8, textWidth / BANNER_SCROLL_SPEED_PX_PER_SEC);
-  section.style.setProperty("--banner-duration", `${seconds.toFixed(1)}s`);
+  const scrollSeconds = Math.max(8, textWidth / BANNER_SCROLL_SPEED_PX_PER_SEC);
+  const totalSeconds = applyBannerKeyframes(scrollSeconds);
+
+  section.style.setProperty("--banner-duration", `${totalSeconds.toFixed(1)}s`);
 }
 
 let bannerMotionFrame = 0;

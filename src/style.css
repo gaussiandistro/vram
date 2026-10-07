@@ -843,15 +843,8 @@ textarea {
   display: block;
 }
 
-@keyframes banner-ticker {
-  from {
-    transform: translateX(0);
-  }
-
-  to {
-    transform: translateX(-50%);
-  }
-}
+/* banner-ticker keyframes are generated in render.js: the message holds still
+   for 5 seconds at its start on every loop, then scrolls at a constant speed. */
 
 .daily-message:hover .daily-message-track,
 .daily-message:focus-within .daily-message-track {
