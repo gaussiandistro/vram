@@ -69,24 +69,85 @@ function appendRichText(parent, text) {
   if (cursor < text.length) parent.append(text.slice(cursor));
 }
 
+const BANNER_SCROLLING_CLASS = "daily-message--scrolling";
+const BANNER_SCROLL_SPEED_PX_PER_SEC = 60;
+
+// Second, visual-only copy of the message so the ticker loops seamlessly.
+function ensureBannerCopy(track, message) {
+  let copy = track.querySelector('p[aria-hidden="true"]');
+
+  if (!copy) {
+    copy = document.createElement("p");
+    copy.setAttribute("aria-hidden", "true");
+    track.append(copy);
+  }
+
+  copy.replaceChildren();
+  appendRichText(copy, message);
+
+  // keep duplicate links out of the tab order (same styling as the originals)
+  for (const link of copy.querySelectorAll("a")) link.tabIndex = -1;
+}
+
+// Scroll only when the message is wider than its viewport; otherwise center it statically.
+function updateDailyMessageMotion() {
+  const section = elements.dailyMessage;
+  if (!section || section.hidden) return;
+
+  const viewport = section.querySelector(".daily-message-viewport");
+  const paragraph = section.querySelector("p");
+  if (!viewport || !paragraph) return;
+
+  // measure with the ticker styles applied to get the un-wrapped text width
+  section.classList.add(BANNER_SCROLLING_CLASS);
+  const textWidth = paragraph.offsetWidth;
+  const availableWidth = viewport.clientWidth;
+
+  if (textWidth <= availableWidth) {
+    section.classList.remove(BANNER_SCROLLING_CLASS);
+    section.style.removeProperty("--banner-duration");
+    return;
+  }
+
+  const seconds = Math.max(8, textWidth / BANNER_SCROLL_SPEED_PX_PER_SEC);
+  section.style.setProperty("--banner-duration", `${seconds.toFixed(1)}s`);
+}
+
+let bannerMotionFrame = 0;
+
+function queueDailyMessageMotionUpdate() {
+  cancelAnimationFrame(bannerMotionFrame);
+  bannerMotionFrame = requestAnimationFrame(updateDailyMessageMotion);
+}
+
 export function renderDailyMessage(message) {
   const section = elements.dailyMessage;
   if (!section) return;
 
   if (!message) {
     section.hidden = true;
+    section.classList.remove(BANNER_SCROLLING_CLASS);
+    section.style.removeProperty("--banner-duration");
     return;
   }
 
+  const track = section.querySelector(".daily-message-track");
   const paragraph = section.querySelector("p");
 
-  if (paragraph) {
+  if (track && paragraph) {
     paragraph.replaceChildren();
     appendRichText(paragraph, message);
+    ensureBannerCopy(track, message);
   }
 
   section.hidden = false;
+  updateDailyMessageMotion();
 }
+
+window.addEventListener("resize", queueDailyMessageMotionUpdate);
+
+// the webfont can change the text width once it swaps in
+if (document.fonts) document.fonts.ready.then(queueDailyMessageMotionUpdate).catch(() => {});
 
 const byId = (id) => document.getElementById(id);
 

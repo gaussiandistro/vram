@@ -803,16 +803,76 @@ textarea {
 .daily-message {
   width: 100%;
   margin: 0;
-  padding: 12px 20px;
+  padding: 12px 0;
   border-bottom: 2px solid var(--border);
   background: var(--card);
   text-align: center;
+  overflow: hidden;
   overflow-wrap: anywhere;
   margin-bottom: -10px;
 }
 
 .daily-message[hidden] {
   display: none !important;
+}
+
+/* Clips the message and keeps it clear of the fixed settings button
+   (.theme-toggle sits at top: 10px / right: 12px and is 34px wide). */
+.daily-message-viewport {
+  overflow: hidden;
+  margin-right: 56px;
+  margin-left: 20px;
+}
+
+.daily-message-track p[aria-hidden="true"] {
+  display: none;
+}
+
+.daily-message--scrolling .daily-message-track {
+  display: flex;
+  width: max-content;
+  animation: banner-ticker var(--banner-duration, 30s) linear infinite;
+}
+
+.daily-message--scrolling .daily-message-track p {
+  white-space: nowrap;
+  padding-right: 2.5rem;
+}
+
+.daily-message--scrolling .daily-message-track p[aria-hidden="true"] {
+  display: block;
+}
+
+@keyframes banner-ticker {
+  from {
+    transform: translateX(0);
+  }
+
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+.daily-message:hover .daily-message-track,
+.daily-message:focus-within .daily-message-track {
+  animation-play-state: paused;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .daily-message--scrolling .daily-message-track {
+    display: block;
+    width: auto;
+    animation: none;
+  }
+
+  .daily-message--scrolling .daily-message-track p {
+    white-space: normal;
+    padding-right: 0;
+  }
+
+  .daily-message--scrolling .daily-message-track p[aria-hidden="true"] {
+    display: none;
+  }
 }
 
 .daily-message h2 {
@@ -837,6 +897,18 @@ textarea {
   outline: 3px solid var(--blue-day);
   outline-offset: 2px;
   border-radius: 3px;
+}
+
+/* Mobile overrides must come after the base banner rules above. */
+@media (max-width: 650px) {
+  .daily-message p {
+    font-size: 16px;
+  }
+
+  .daily-message-viewport {
+    margin-right: 50px;
+    margin-left: 12px;
+  }
 }
 
 .changelog-toggle {
@@ -1340,43 +1412,4 @@ textarea {
 
 .danger:hover {
   background: #b70000;
-}
-
-.daily-message {
-  overflow: hidden;
-  white-space: nowrap;
-}
-
-.marquee {
-  width: 100%;
-  overflow: hidden;
-  container-type: inline-size;
-}
-
-.marquee p {
-  display: inline-block;
-  white-space: nowrap;
-  margin: 0;
-
-  animation: scroll-left 40s linear infinite;
-}
-
-@keyframes scroll-left {
-  0%,
-  12.5% {
-    transform: translateX(0);
-  }
-
-  56.25% {
-    transform: translateX(calc(-50cqw - 50%));
-  }
-
-  /* Reset offscreen, then slide back in from the right. */
-  56.2501% {
-    transform: translateX(calc(50cqw + 50%));
-  }
-
-  100% {
-    transform: translateX(0);
-  }
 }
