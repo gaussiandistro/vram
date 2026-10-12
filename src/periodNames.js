@@ -2,7 +2,7 @@ import { loadStorage, saveStorage } from "./storage.js";
 
 const PERIOD_NAMES_STORAGE_KEY = "vram-period-names";
 
-const MAX_NAME_LENGTH = 30;
+const MAX_NAME_LENGTH = 100;
 
 let periodNames = loadPeriodNames();
 

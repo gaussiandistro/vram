@@ -269,7 +269,7 @@ function beginRename(item, nameSpan) {
   const input = document.createElement("input");
   input.type = "text";
   input.className = "name-input";
-  input.maxLength = 30;
+  input.maxLength = 100;
   input.value = getCustomName(item.id) || "";
   input.placeholder = item.name;
   input.setAttribute("aria-label", `Rename ${displayName(item)}`);
