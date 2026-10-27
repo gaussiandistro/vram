@@ -1,4 +1,6 @@
+import { currentDateTime } from "./clock.js";
 import { INSTALLATION_STORAGE_KEY, resetNotificationSettings } from "./notifications.js";
+import { updateMainTracker } from "./render.js";
 import { clearStoredSettings } from "./storage.js";
 import { getThemeSettings, replaceThemeSettings, updateThemeSettings } from "./theme.js";
 
@@ -280,6 +282,36 @@ function syncEndingEmphasisControl() {
   });
 }
 
+function syncTrackerDisplayControls() {
+  const linearProgress = document.getElementById("linearProgress");
+  const endOfDayCountdown = document.getElementById("endOfDayCountdown");
+  const progressRing = document.getElementById("progressRing");
+
+  const applyProgressStyle = () => {
+    progressRing?.classList.toggle("line", getThemeSettings().linearProgress === true);
+  };
+
+  if (linearProgress) {
+    linearProgress.checked = getThemeSettings().linearProgress === true;
+
+    linearProgress.addEventListener("change", () => {
+      updateThemeSettings({ linearProgress: linearProgress.checked });
+      applyProgressStyle();
+    });
+  }
+
+  if (endOfDayCountdown) {
+    endOfDayCountdown.checked = getThemeSettings().endOfDayCountdown === true;
+
+    endOfDayCountdown.addEventListener("change", () => {
+      updateThemeSettings({ endOfDayCountdown: endOfDayCountdown.checked });
+      updateMainTracker(currentDateTime());
+    });
+  }
+
+  applyProgressStyle();
+}
+
 function resetColorsAndFont() {
   root.style.removeProperty("--text");
   root.style.removeProperty("--background");
@@ -334,6 +366,7 @@ function syncColorControlsAfterReset(prefix, hex) {
 export function initThemeCustomizer() {
   applyStoredSettings();
   syncEndingEmphasisControl();
+  syncTrackerDisplayControls();
 
   const toggle = document.getElementById("themeCustomizerToggle");
   const panel = document.getElementById("themeCustomizerPanel");
@@ -449,7 +482,12 @@ export function initThemeCustomizer() {
   updateContrastWarning();
 
   resetLight?.addEventListener("click", () => {
-    replaceThemeSettings({ mode: "light", endingEmphasis: getThemeSettings().endingEmphasis });
+    replaceThemeSettings({
+      mode: "light",
+      endingEmphasis: getThemeSettings().endingEmphasis,
+      linearProgress: getThemeSettings().linearProgress,
+      endOfDayCountdown: getThemeSettings().endOfDayCountdown,
+    });
 
     resetColorsAndFont();
 
@@ -463,7 +501,12 @@ export function initThemeCustomizer() {
   });
 
   resetDark?.addEventListener("click", () => {
-    replaceThemeSettings({ mode: "dark", endingEmphasis: getThemeSettings().endingEmphasis });
+    replaceThemeSettings({
+      mode: "dark",
+      endingEmphasis: getThemeSettings().endingEmphasis,
+      linearProgress: getThemeSettings().linearProgress,
+      endOfDayCountdown: getThemeSettings().endOfDayCountdown,
+    });
 
     resetColorsAndFont();
 

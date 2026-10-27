@@ -323,10 +323,22 @@ textarea {
   opacity: 0.8;
 }
 
+.end-of-day {
+  margin-top: 10px;
+  font-size: 14px;
+  opacity: 0.75;
+}
+
 @property --progress {
   syntax: "<angle>";
   inherits: false;
   initial-value: 0deg;
+}
+
+@property --progress-pct {
+  syntax: "<percentage>";
+  inherits: true;
+  initial-value: 0%;
 }
 
 .progress-wrapper,
@@ -373,7 +385,9 @@ textarea {
     var(--ring-progress) 0deg var(--progress),
     var(--ring-background) var(--progress) 360deg
   );
-  transition: --progress 1s linear;
+  transition:
+    --progress 1s linear,
+    --progress-pct 1s linear;
 }
 
 .progress-ring.no-anim {
@@ -407,6 +421,59 @@ textarea {
 #progressPercent {
   font-size: 24px;
   font-weight: 700;
+}
+
+.progress-ring.line {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: min(100%, 420px);
+  aspect-ratio: auto;
+  border-radius: 0;
+  background: none;
+}
+
+.progress-ring.line::before {
+  content: "";
+  width: 100%;
+  height: 14px;
+  border-radius: 999px;
+  background: linear-gradient(
+    to right,
+    var(--ring-progress) 0 var(--progress-pct),
+    var(--ring-background) var(--progress-pct) 100%
+  );
+}
+
+.progress-ring.line.ending {
+  animation: none;
+}
+
+.progress-ring.line.ending::before {
+  animation: line-pulse 1s ease-in-out infinite;
+}
+
+@keyframes line-pulse {
+  0%,
+  100% {
+    filter: none;
+  }
+
+  50% {
+    filter: drop-shadow(0 0 6px var(--ram-day));
+  }
+}
+
+.progress-ring.line .progress-inner {
+  width: auto;
+  aspect-ratio: auto;
+  border-radius: 0;
+  background: none;
+}
+
+.progress-ring.line #progressPercent {
+  font-size: 18px;
+  opacity: 0.85;
 }
 
 .lunch-section,
@@ -744,7 +811,7 @@ textarea {
     font-size: clamp(48px, 13vw, 60px);
   }
 
-  .progress-ring {
+  .progress-ring:not(.line) {
     width: 150px;
   }
 
@@ -794,6 +861,7 @@ textarea {
   }
 
   .progress-ring.ending,
+  .progress-ring.line.ending::before,
   .countdown.ending,
   #dayMessage.loading {
     animation: none;

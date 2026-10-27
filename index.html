@@ -88,6 +88,16 @@
           <input id="clockFormatToggle" type="checkbox" />
           <span>Use 24-hour time</span>
         </label>
+
+        <label class="theme-option" for="linearProgress">
+          <input id="linearProgress" type="checkbox" />
+          <span>Show progress as a line instead of a ring</span>
+        </label>
+
+        <label class="theme-option" for="endOfDayCountdown">
+          <input id="endOfDayCountdown" type="checkbox" />
+          <span>Show a countdown to the end of the school day</span>
+        </label>
       </section>
 
       <section id="notifSection" class="theme-control-section">
@@ -322,6 +332,8 @@
 
         <div id="periodTimes" class="period-times">--</div>
 
+        <div id="endOfDay" class="end-of-day hidden"></div>
+
         <div class="button-row">
           <button
             id="scheduleToggle"
@@ -448,6 +460,15 @@
         </div>
         <br />
         <h2 id="changelogTitle">Changelog</h2>
+
+        <div class="changelog-entry">
+          <h3>Extra Settings</h3>
+          <p class="changelog-date">October 26, 2026</p>
+          <ul>
+            <li>Added a toggle to switch the progress ring to a line.</li>
+            <li>Added a toggle for an end of school day countdown.</li>
+          </ul>
+        </div>
 
         <div class="changelog-entry">
           <h3>Increased Character Limit</h3>

@@ -8,6 +8,7 @@ import {
   getPersonalizedCurrentPeriod,
   getPersonalizedDisplaySchedule,
   getSchedule,
+  getSchoolEndSeconds,
 } from "./schedule.js";
 
 import { getLunchChoice } from "./lunchChoice.js";
@@ -187,6 +188,7 @@ export const elements = {
   progressRing: byId("progressRing"),
   progressPercent: byId("progressPercent"),
   periodTimes: byId("periodTimes"),
+  endOfDay: byId("endOfDay"),
   clockFormatToggle: byId("clockFormatToggle"),
   devPanel: byId("devPanel"),
   devDate: byId("devDate"),
@@ -331,16 +333,18 @@ export function setProgress(progress) {
   const percent = Math.round(normalized * 100);
   const degrees = Math.round(normalized * 36000) / 100;
 
-  if (degrees !== lastProgressDegrees) {
+  if (degrees !== lastProgressDegrees && elements.progressRing) {
     const ring = elements.progressRing;
+    const reset = lastProgressDegrees !== undefined && degrees < lastProgressDegrees;
 
-    if (ring && lastProgressDegrees !== undefined && degrees < lastProgressDegrees) {
-      ring.classList.add("no-anim");
-      ring.style.setProperty("--progress", `${degrees}deg`);
+    if (reset) ring.classList.add("no-anim");
+
+    ring.style.setProperty("--progress", `${degrees}deg`);
+    ring.style.setProperty("--progress-pct", `${(degrees / 360) * 100}%`);
+
+    if (reset) {
       void ring.offsetWidth;
       ring.classList.remove("no-anim");
-    } else {
-      ring?.style.setProperty("--progress", `${degrees}deg`);
     }
   }
 
@@ -407,9 +411,29 @@ function setEndingEmphasis(enabled) {
   elements.progressRing?.classList.toggle("ending", emphasis);
 }
 
+function updateEndOfDay(type, seconds) {
+  const element = elements.endOfDay;
+  if (!element) return;
+
+  const schedule = type ? getSchedule(type) : [];
+  const startSeconds = schedule[0]?.startSeconds ?? 0;
+  const endSeconds = type ? getSchoolEndSeconds(type) : 0;
+
+  const visible =
+    getThemeSettings().endOfDayCountdown === true &&
+    endSeconds > 0 &&
+    seconds >= startSeconds &&
+    seconds < endSeconds;
+
+  setHidden(element, !visible);
+  if (visible) setText(element, `School ends in ${formatDuration(endSeconds - seconds)}`);
+}
+
 export function updateMainTracker(now) {
   const type = getDayType(now);
   const seconds = secondsIntoDay(now);
+
+  updateEndOfDay(type, seconds);
 
   setEndingEmphasis(false);
 
