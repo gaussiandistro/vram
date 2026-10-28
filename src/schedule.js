@@ -3,15 +3,12 @@ import { getCustomName } from "./periodNames.js";
 import { supabase } from "./supabase.js";
 import { dateKey, secondsFromTime, secondsIntoDay, timeFromSeconds } from "./time.js";
 
-const DEFAULT_WEEK_PATTERN = { 1: "Blue", 2: "White", 3: "RAM", 4: "Blue", 5: "White" };
-
-let weekPattern = DEFAULT_WEEK_PATTERN;
-let dayExceptions = {};
-let noSchoolDates = new Set();
 let schedules = {};
 let lunches = {};
-let schoolEndSeconds = {};
+let passingMinutes = {};
+let dayTypes = {};
 let displaySchedules = {};
+let schoolEndSeconds = {};
 
 export function rebuildScheduleIndexes() {
   schoolEndSeconds = Object.fromEntries(
@@ -32,17 +29,13 @@ export function rebuildScheduleIndexes() {
   );
 }
 
-function passingPeriodSeconds(type) {
-  const lengths = (schedules[type] || [])
-    .filter((item) => item.kind === "passing")
-    .map((item) => item.endSeconds - item.startSeconds);
-
-  return lengths.length > 0 ? Math.min(...lengths) : 0;
+function passingSecondsFor(type) {
+  return (passingMinutes[type] || 0) * 60;
 }
 
 function splitPeriodAroundLunch(type, period, lunch) {
   const segments = [];
-  const passing = passingPeriodSeconds(type);
+  const passing = passingSecondsFor(type);
 
   const classEnd = lunch.startSeconds - passing;
 
@@ -94,19 +87,19 @@ export function getPersonalizedDisplaySchedule(type) {
   const lunch = getLunches(type).find((entry) => entry.id === lunchId);
   if (!lunch) return base;
 
-  const period = base.find(
-    (item) =>
-      !item.isLunch &&
-      item.kind !== "passing" &&
-      item.startSeconds <= lunch.startSeconds &&
-      lunch.endSeconds <= item.endSeconds
-  );
+  const period = (schedules[type] || []).find((item) => item.id === lunch.duringBlock);
   if (!period) return base;
 
-  // Only show the student's own lunch
-  return base
-    .filter((item) => !item.isLunch)
-    .flatMap((item) => (item === period ? splitPeriodAroundLunch(type, period, lunch) : [item]));
+  const result = [];
+
+  for (const item of base) {
+    if (item.isLunch) continue;
+
+    if (item.id === period.id) result.push(...splitPeriodAroundLunch(type, period, lunch));
+    else result.push(item);
+  }
+
+  return result;
 }
 
 export function getPersonalizedCurrentPeriod(type, seconds) {
@@ -123,51 +116,52 @@ export function getPersonalizedCurrentPeriod(type, seconds) {
 export async function loadScheduleData() {
   if (!supabase) return;
 
-  const [
-    { data: types, error: typesError },
-    { data: blocks, error: blocksError },
-    { data: dates, error: datesError },
-    { data: defaults, error: defaultsError },
-  ] = await Promise.all([
-    supabase.from("schedule_types").select("id, name").eq("active", true),
-    supabase
-      .from("schedule_blocks")
-      .select("block_id, name, kind, start_time, end_time, sort_order, schedule_types!inner(name)")
-      .order("sort_order"),
-    supabase
-      .from("calendar_dates")
-      .select("date, is_school_day, schedule_type:schedule_types(name)"),
-    supabase
-      .from("schedule_defaults")
-      .select("weekday, schedule_type:schedule_types(name)")
-      .order("weekday"),
-  ]);
+  const { data, error } = await supabase.rpc("get_app_bootstrap");
 
-  const firstError = typesError || blocksError || datesError || defaultsError;
-  if (firstError) throw firstError;
+  if (error) throw error;
 
-  const nextSchedules = Object.fromEntries((types || []).map((type) => [type.name, []]));
-  const nextLunches = Object.fromEntries((types || []).map((type) => [type.name, []]));
+  const bundle = data || {};
+  const nameByCode = new Map();
 
-  for (const block of blocks || []) {
-    const type = Array.isArray(block.schedule_types)
-      ? block.schedule_types[0]
-      : block.schedule_types;
+  const nextSchedules = {};
+  const nextLunches = {};
+  const nextPassing = {};
 
-    const target = block.kind === "lunch" ? nextLunches : nextSchedules;
-    if (!type || !target[type.name]) continue;
+  for (const type of bundle.types || []) {
+    nameByCode.set(type.code, type.name);
+    nextSchedules[type.name] = [];
+    nextLunches[type.name] = [];
+    nextPassing[type.name] = Number(type.passing_minutes) || 0;
+  }
 
-    const start = block.start_time.slice(0, 5);
-    const end = block.end_time.slice(0, 5);
+  for (const block of bundle.blocks || []) {
+    const name = nameByCode.get(block.schedule_type_code);
+    if (!name) continue;
 
-    target[type.name].push({
-      id: block.block_id,
+    nextSchedules[name].push({
+      id: block.code,
       name: block.name,
       kind: block.kind,
-      start,
-      end,
-      startSeconds: secondsFromTime(start),
-      endSeconds: secondsFromTime(end),
+      start: block.start_time,
+      end: block.end_time,
+      startSeconds: secondsFromTime(block.start_time),
+      endSeconds: secondsFromTime(block.end_time),
+    });
+  }
+
+  for (const lunch of bundle.lunches || []) {
+    const name = nameByCode.get(lunch.schedule_type_code);
+    if (!name) continue;
+
+    nextLunches[name].push({
+      id: lunch.code,
+      name: lunch.name,
+      kind: "lunch",
+      duringBlock: lunch.during_block_code,
+      start: lunch.start_time,
+      end: lunch.end_time,
+      startSeconds: secondsFromTime(lunch.start_time),
+      endSeconds: secondsFromTime(lunch.end_time),
     });
   }
 
@@ -177,37 +171,23 @@ export async function loadScheduleData() {
   for (const lunch of Object.values(nextLunches))
     lunch.sort((a, b) => a.startSeconds - b.startSeconds);
 
-  const nextExceptions = {};
-  const nextNoSchool = new Set();
+  const nextDayTypes = {};
 
-  for (const entry of dates || []) {
-    const type = Array.isArray(entry.schedule_type) ? entry.schedule_type[0] : entry.schedule_type;
-    if (entry.is_school_day && type) nextExceptions[entry.date] = type.name;
-    else if (!entry.is_school_day) nextNoSchool.add(entry.date);
-  }
-
-  if (defaults && defaults.length > 0) {
-    const nextPattern = {};
-    for (const row of defaults) {
-      const type = Array.isArray(row.schedule_type) ? row.schedule_type[0] : row.schedule_type;
-      if (type) nextPattern[row.weekday] = type.name;
-    }
-    if (Object.keys(nextPattern).length > 0) weekPattern = nextPattern;
+  for (const [date, code] of Object.entries(bundle.days || {})) {
+    const name = nameByCode.get(code);
+    if (name) nextDayTypes[date] = name;
   }
 
   schedules = nextSchedules;
   lunches = nextLunches;
-  dayExceptions = nextExceptions;
-  noSchoolDates = nextNoSchool;
+  passingMinutes = nextPassing;
+  dayTypes = nextDayTypes;
 
   rebuildScheduleIndexes();
 }
 
 export function getDayType(date) {
-  const key = dateKey(date);
-  if (noSchoolDates.has(key)) return null;
-  const type = dayExceptions[key] || weekPattern[date.getDay()];
-  return schedules[type] ? type : null;
+  return dayTypes[dateKey(date)] || null;
 }
 
 export function getNextSchoolDay(date) {

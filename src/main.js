@@ -19,6 +19,7 @@ import {
   notifSettings,
   restorePushSubscription,
   saveNotifSettings,
+  syncNotificationPreferences,
 } from "./notifications.js";
 
 import {
@@ -59,9 +60,9 @@ elements.daySelector?.addEventListener("change", () => renderSchedule(currentDat
 
 for (const selector of Object.values(elements.lunchSelectors)) {
   selector?.addEventListener("change", () => {
-    // This works for now, but we'll have to figure something out for ER days probably
     const dayType = selector === elements.lunchSelectors.Blue ? "Blue" : "White";
     setLunchChoice(dayType, selector.value || null);
+    saveNotifSettings();
     renderSchedule(currentDateTime(), true);
     updateEverything();
   });
@@ -98,6 +99,10 @@ for (const [checkbox, key] of NOTIF_CHECKBOXES)
   });
 
 updateNotificationUI();
+
+void syncNotificationPreferences().catch((error) => {
+  logError("Failed to sync notification preferences.", error);
+});
 
 function updateEverything() {
   const now = currentDateTime();

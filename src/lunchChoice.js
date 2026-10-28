@@ -24,6 +24,19 @@ export function getLunchChoice(dayType) {
   return LUNCH_IDS.has(choice) ? choice : null;
 }
 
+const LUNCH_GROUP_BY_CODE = {
+  blue: "Blue",
+  white: "White",
+  ram: "RAM",
+  er_white: "ER White",
+};
+
+export function getLunchChoicesByScheduleCode() {
+  return Object.fromEntries(
+    Object.entries(LUNCH_GROUP_BY_CODE).map(([code, dayType]) => [code, getLunchChoice(dayType)])
+  );
+}
+
 export function setLunchChoice(dayType, lunchId) {
   const key = storageKeyFor(dayType);
 

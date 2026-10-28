@@ -1,6 +1,7 @@
-import { supabase, VAPID_PUBLIC_KEY } from "./supabase.js";
-import { loadStorage, saveStorage } from "./storage.js";
 import { logError } from "./logger.js";
+import { getLunchChoicesByScheduleCode } from "./lunchChoice.js";
+import { loadStorage, saveStorage } from "./storage.js";
+import { supabase, VAPID_PUBLIC_KEY } from "./supabase.js";
 
 const NOTIF_STORAGE_KEY = "vram-notifs";
 
@@ -14,7 +15,6 @@ export const DEFAULT_NOTIF_SETTINGS = {
 };
 
 export let notifSettings = loadNotifSettings();
-let notificationSubscriptionId = null;
 
 function loadNotifSettings() {
   try {
@@ -27,12 +27,42 @@ function loadNotifSettings() {
   }
 }
 
+function getInstallationToken() {
+  try {
+    let token = loadStorage(INSTALLATION_STORAGE_KEY);
+
+    if (!token) {
+      token = crypto.randomUUID();
+      saveStorage(INSTALLATION_STORAGE_KEY, token);
+    }
+
+    return token;
+  } catch {
+    return crypto.randomUUID();
+  }
+}
+
 export function saveNotifSettings() {
   saveStorage(NOTIF_STORAGE_KEY, JSON.stringify(notifSettings));
 
   return syncNotificationPreferences().catch((error) => {
     logError("Failed to sync notification preferences.", error);
   });
+}
+
+export async function syncNotificationPreferences() {
+  if (!supabase) return;
+
+  const { error } = await supabase.rpc("save_notification_settings", {
+    p_token: getInstallationToken(),
+    p_enabled: notifSettings.enabled,
+    p_period_end: notifSettings.periodEnd,
+    p_lunch_end: notifSettings.lunchEnd,
+    p_upcoming: notifSettings.upcoming,
+    p_lunch_choices: getLunchChoicesByScheduleCode(),
+  });
+
+  if (error) throw error;
 }
 
 export function notificationsSupported() {
@@ -60,20 +90,6 @@ async function getServiceWorkerRegistration() {
   }
 }
 
-function getInstallationId() {
-  try {
-    let id = loadStorage(INSTALLATION_STORAGE_KEY);
-
-    if (!id) {
-      id = crypto.randomUUID();
-      saveStorage(INSTALLATION_STORAGE_KEY, id);
-    }
-    return id;
-  } catch {
-    return crypto.randomUUID();
-  }
-}
-
 function urlBase64ToUint8Array(value) {
   const padding = "=".repeat((4 - (value.length % 4)) % 4);
 
@@ -97,21 +113,7 @@ async function getPushSubscription() {
   );
 }
 
-async function syncNotificationPreferences() {
-  if (!supabase || !notificationSubscriptionId) return;
-
-  const { error } = await supabase.rpc("update_notification_preferences", {
-    p_subscription_id: notificationSubscriptionId,
-    p_enabled: notifSettings.enabled,
-    p_period_end: notifSettings.periodEnd,
-    p_lunch_end: notifSettings.lunchEnd,
-    p_upcoming: notifSettings.upcoming,
-  });
-
-  if (error) throw error;
-}
-
-async function savePushSubscription(subscription = null) {
+async function registerPushSubscription(subscription = null) {
   if (!supabase) throw new Error("Supabase is not configured.");
 
   const pushSubscription = subscription || (await getPushSubscription());
@@ -120,8 +122,8 @@ async function savePushSubscription(subscription = null) {
   const { endpoint, keys } = pushSubscription.toJSON();
   if (!endpoint || !keys?.p256dh || !keys.auth) throw new Error("Invalid push subscription.");
 
-  const { data, error } = await supabase.rpc("upsert_push_subscription", {
-    p_installation_id: getInstallationId(),
+  const { error } = await supabase.rpc("register_push_installation", {
+    p_token: getInstallationToken(),
     p_endpoint: endpoint,
     p_p256dh: keys.p256dh,
     p_auth: keys.auth,
@@ -131,16 +133,15 @@ async function savePushSubscription(subscription = null) {
     logError("Failed to save push subscription.", error);
     throw error;
   }
-
-  notificationSubscriptionId = data;
-  await syncNotificationPreferences();
 }
 
 export async function restorePushSubscription() {
   if (!supabase || notificationPermission() !== "granted") return;
+
   const registration = await getServiceWorkerRegistration();
   const subscription = await registration?.pushManager.getSubscription();
-  if (subscription) await savePushSubscription(subscription);
+
+  if (subscription) await registerPushSubscription(subscription);
 }
 
 export async function enableNotifications() {
@@ -148,7 +149,7 @@ export async function enableNotifications() {
     if ((await requestNotificationPermission()) !== "granted") return false;
   }
 
-  await savePushSubscription();
+  await registerPushSubscription();
   notifSettings.enabled = true;
   saveNotifSettings();
   return true;
