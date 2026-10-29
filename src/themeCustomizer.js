@@ -1,8 +1,11 @@
 import { currentDateTime } from "./clock.js";
 import { INSTALLATION_STORAGE_KEY, resetNotificationSettings } from "./notifications.js";
 import { updateMainTracker } from "./render.js";
+import { isSecretUnlocked } from "./secrets.js";
+import { getSeason, SEASONS } from "./seasons.js";
 import { clearStoredSettings } from "./storage.js";
 import { getThemeSettings, replaceThemeSettings, updateThemeSettings } from "./theme.js";
+import { applyTheme } from "./themeApply.js";
 
 const root = document.documentElement;
 
@@ -196,6 +199,7 @@ function setupColorControl({ key, cssVariable, prefix }) {
     root.style.setProperty(cssVariable, hex);
 
     updateThemeSettings({ [key]: hex });
+    applyTheme();
 
     syncControls(rgb);
     updateContrastWarning();
@@ -243,6 +247,7 @@ function setupColorControl({ key, cssVariable, prefix }) {
     root.style.removeProperty(cssVariable);
 
     updateThemeSettings({ [key]: null });
+    applyTheme();
 
     requestAnimationFrame(() => {
       syncControls(readCssColor(cssVariable));
@@ -251,24 +256,6 @@ function setupColorControl({ key, cssVariable, prefix }) {
   });
 
   syncControls(readCssColor(cssVariable));
-}
-
-function applyStoredSettings() {
-  if (getThemeSettings().mode) {
-    root.setAttribute("data-theme", getThemeSettings().mode);
-  }
-
-  if (getThemeSettings().textColor) {
-    root.style.setProperty("--text", getThemeSettings().textColor);
-  }
-
-  if (getThemeSettings().backgroundColor) {
-    root.style.setProperty("--background", getThemeSettings().backgroundColor);
-  }
-
-  if (getThemeSettings().font) {
-    setGoogleFont(getThemeSettings().font, false);
-  }
 }
 
 function syncEndingEmphasisControl() {
@@ -310,6 +297,94 @@ function syncTrackerDisplayControls() {
   }
 
   applyProgressStyle();
+}
+
+function updateSeasonOverrideUI() {
+  const season = getSeason(document.documentElement.dataset.season);
+  const note = document.getElementById("seasonOverrideNote");
+  const restore = document.getElementById("seasonRestoreNormal");
+  const locked = Boolean(season);
+
+  if (note) {
+    note.textContent = season ? `${season.label} is overriding your normal theme.` : "";
+    note.classList.toggle("hidden", !season);
+  }
+
+  restore?.classList.toggle("hidden", !season);
+
+  for (const id of ["textColorSection", "backgroundColorSection"]) {
+    const section = document.getElementById(id);
+    if (!section) continue;
+
+    section.classList.toggle("season-locked", locked);
+
+    for (const control of section.querySelectorAll("input, button")) {
+      control.disabled = locked;
+    }
+
+    for (const hint of section.querySelectorAll(".season-locked-hint")) {
+      hint.classList.toggle("hidden", !locked);
+    }
+  }
+}
+
+function buildSeasonOptions() {
+  const select = document.getElementById("themeSeason");
+  if (!select) return;
+
+  for (const option of select.querySelectorAll("option[data-season]")) {
+    option.remove();
+  }
+
+  const stored = getThemeSettings().season;
+
+  for (const season of SEASONS) {
+    if (season.secret && !isSecretUnlocked(season.unlock) && stored !== season.id) continue;
+
+    const option = document.createElement("option");
+    option.value = season.id;
+    option.dataset.season = "true";
+    option.textContent = season.label;
+    select.append(option);
+  }
+
+  select.value = stored === "off" || getSeason(stored) ? stored : "auto";
+}
+
+export function refreshSeasonOptions() {
+  buildSeasonOptions();
+}
+
+function syncSeasonControls() {
+  const select = document.getElementById("themeSeason");
+  const effects = document.getElementById("seasonEffects");
+
+  if (select) {
+    buildSeasonOptions();
+
+    select.addEventListener("change", () => {
+      updateThemeSettings({ season: select.value });
+      applyTheme();
+      updateSeasonOverrideUI();
+
+      requestAnimationFrame(() => {
+        syncColorControlsFromCss("themeText", "--text");
+        syncColorControlsFromCss("themeBackground", "--background");
+        updateContrastWarning();
+      });
+    });
+  }
+
+  if (effects) {
+    effects.checked = getThemeSettings().seasonEffects !== false;
+
+    effects.addEventListener("change", () => {
+      updateThemeSettings({ seasonEffects: effects.checked });
+      applyTheme();
+    });
+  }
+
+  updateSeasonOverrideUI();
 }
 
 function resetColorsAndFont() {
@@ -363,10 +438,36 @@ function syncColorControlsAfterReset(prefix, hex) {
   }
 }
 
+function syncColorControlsFromCss(prefix, cssVariable) {
+  syncColorControlsAfterReset(prefix, rgbToHex(readCssColor(cssVariable)));
+}
+
 export function initThemeCustomizer() {
-  applyStoredSettings();
+  applyTheme();
+
+  if (getThemeSettings().font) {
+    setGoogleFont(getThemeSettings().font, false);
+  }
+
   syncEndingEmphasisControl();
   syncTrackerDisplayControls();
+  syncSeasonControls();
+
+  document.getElementById("seasonRestoreNormal")?.addEventListener("click", () => {
+    updateThemeSettings({ season: "off" });
+    applyTheme();
+
+    const seasonSelect = document.getElementById("themeSeason");
+    if (seasonSelect) seasonSelect.value = "off";
+
+    updateSeasonOverrideUI();
+
+    requestAnimationFrame(() => {
+      syncColorControlsFromCss("themeText", "--text");
+      syncColorControlsFromCss("themeBackground", "--background");
+      updateContrastWarning();
+    });
+  });
 
   const toggle = document.getElementById("themeCustomizerToggle");
   const panel = document.getElementById("themeCustomizerPanel");
@@ -387,9 +488,12 @@ export function initThemeCustomizer() {
     toggle.setAttribute("aria-expanded", String(open));
 
     if (open) {
-      requestAnimationFrame(() => {
-        fontInput?.focus();
-      });
+      updateSeasonOverrideUI();
+      syncColorControlsFromCss("themeText", "--text");
+      syncColorControlsFromCss("themeBackground", "--background");
+      updateContrastWarning();
+
+      close?.focus();
     }
   }
 
@@ -487,15 +591,21 @@ export function initThemeCustomizer() {
       endingEmphasis: getThemeSettings().endingEmphasis,
       linearProgress: getThemeSettings().linearProgress,
       endOfDayCountdown: getThemeSettings().endOfDayCountdown,
+      season: "off",
+      seasonEffects: getThemeSettings().seasonEffects,
     });
 
     resetColorsAndFont();
+    applyTheme();
 
-    root.setAttribute("data-theme", "light");
+    const lightSeasonSelect = document.getElementById("themeSeason");
+    if (lightSeasonSelect) lightSeasonSelect.value = "off";
+
+    updateSeasonOverrideUI();
 
     requestAnimationFrame(() => {
-      syncColorControlsAfterReset("themeText", "#111111");
-      syncColorControlsAfterReset("themeBackground", "#b3d4ef");
+      syncColorControlsFromCss("themeText", "--text");
+      syncColorControlsFromCss("themeBackground", "--background");
       updateContrastWarning();
     });
   });
@@ -506,15 +616,21 @@ export function initThemeCustomizer() {
       endingEmphasis: getThemeSettings().endingEmphasis,
       linearProgress: getThemeSettings().linearProgress,
       endOfDayCountdown: getThemeSettings().endOfDayCountdown,
+      season: "off",
+      seasonEffects: getThemeSettings().seasonEffects,
     });
 
     resetColorsAndFont();
+    applyTheme();
 
-    root.setAttribute("data-theme", "dark");
+    const darkSeasonSelect = document.getElementById("themeSeason");
+    if (darkSeasonSelect) darkSeasonSelect.value = "off";
+
+    updateSeasonOverrideUI();
 
     requestAnimationFrame(() => {
-      syncColorControlsAfterReset("themeText", "#e8eef6");
-      syncColorControlsAfterReset("themeBackground", "#131f30");
+      syncColorControlsFromCss("themeText", "--text");
+      syncColorControlsFromCss("themeBackground", "--background");
       updateContrastWarning();
     });
   });

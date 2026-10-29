@@ -10,7 +10,14 @@
   --font-family: "Roboto Slab", Georgia, serif;
 }
 
+@property --pumpkin-face {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: #2f1604;
+}
+
 :root:not([data-theme="dark"]) {
+  color-scheme: light;
   --background: #b3d4ef;
   --text: #111;
   --card: rgb(255 255 255 / 70%);
@@ -23,46 +30,158 @@
   --field: #fff;
   --row-border: rgb(0 0 0 / 18%);
   --hover: rgb(255 255 255 / 40%);
+  --accent: #123c85;
 }
 
 :root[data-theme="dark"] {
+  color-scheme: dark;
   --background: #131f30;
   --text: #e8eef6;
   --card: rgb(255 255 255 / 8%);
   --border: #d5e0ec;
   --blue-day: #8ab4f8;
+  --white-day: #fff;
   --ram-day: #ff6b6b;
   --ring-background: rgb(255 255 255 / 14%);
   --ring-progress: #e8eef6;
   --field: #1d2b3f;
   --row-border: rgb(255 255 255 / 15%);
   --hover: rgb(255 255 255 / 12%);
+  --accent: #8ab4f8;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) {
-    --background: #131f30;
-    --text: #e8eef6;
-    --card: rgb(255 255 255 / 8%);
-    --border: #d5e0ec;
-    --blue-day: #8ab4f8;
-    --ram-day: #ff6b6b;
-    --ring-background: rgb(255 255 255 / 14%);
-    --ring-progress: #e8eef6;
-    --field: #1d2b3f;
-    --row-border: rgb(255 255 255 / 15%);
-    --hover: rgb(255 255 255 / 12%);
-  }
+:root[data-season="halloween"] {
+  --background: #f8eeda;
+  --text: #221407;
+  --card: rgb(255 255 255 / 68%);
+  --border: #221407;
+  --ring-background: #fff;
+  --ring-progress: #9c3f12;
+  --field: #fffdf8;
+  --row-border: rgb(34 20 7 / 16%);
+  --hover: rgb(255 255 255 / 40%);
+  --accent: #9c3f12;
+  --ghost-fill: #fdfbff;
+  --ghost-eyes: #4a3a5c;
+  --ghost-alpha: 0.55;
+  --ghost-shadow: rgb(60 30 10 / 18%);
+  --pumpkin-highlight: #ffc477;
+  --pumpkin-body: #f28c2c;
+  --pumpkin-shadow: #c25a0d;
+  --pumpkin-stem: #5f6f32;
+  --pumpkin-face: #2f1604;
+  --pumpkin-glow: rgb(210 90 15 / 30%);
+  --moon: #e7c26a;
+  --moon-glow: rgb(231 194 106 / 30%);
+  --star: #b98a2e;
+  --spider: #3a2414;
+  --ground-top: #e7d0a6;
+  --ground-bottom: #dcc193;
+  --ground-back: #efdfc1;
+}
+
+:root[data-theme="dark"][data-season="halloween"] {
+  --background: #15100b;
+  --text: #f2e6d2;
+  --card: rgb(255 255 255 / 8%);
+  --border: #f2e6d2;
+  --ring-background: rgb(255 255 255 / 14%);
+  --ring-progress: #ffa64d;
+  --field: #241a12;
+  --row-border: rgb(255 255 255 / 15%);
+  --hover: rgb(255 255 255 / 12%);
+  --accent: #ffa64d;
+  --ghost-fill: #e7eeff;
+  --ghost-eyes: #3f3352;
+  --ghost-alpha: 0.36;
+  --ghost-shadow: rgb(150 190 255 / 20%);
+  --pumpkin-highlight: #ffc06a;
+  --pumpkin-body: #ef8a2a;
+  --pumpkin-shadow: #a94a09;
+  --pumpkin-stem: #6c7d3a;
+  --pumpkin-face: #241205;
+  --pumpkin-glow: rgb(255 140 40 / 40%);
+  --moon: #f8ebc4;
+  --moon-glow: rgb(255 232 176 / 38%);
+  --star: #f3e4b8;
+  --spider: #d8c6a4;
+  --ground-top: #1c130c;
+  --ground-bottom: #0d0805;
+  --ground-back: #17100a;
+}
+
+:root[data-season="jackolantern"] {
+  color-scheme: dark;
+  --background: #080504;
+  --text: #fff0d2;
+  --card: rgb(255 150 60 / 9%);
+  --border: #e8b46a;
+  --blue-day: #9cc4ff;
+  --white-day: #fff6e4;
+  --ram-day: #ff7a5c;
+  --ring-background: rgb(255 180 100 / 12%);
+  --ring-progress: #ff9d3c;
+  --field: #1c1008;
+  --row-border: rgb(255 180 100 / 20%);
+  --hover: rgb(255 150 60 / 14%);
+  --accent: #ffd166;
+  --ghost-fill: #ffd9a0;
+  --ghost-eyes: #2a1808;
+  --ghost-alpha: 0.22;
+  --ghost-shadow: rgb(255 150 60 / 25%);
+  --pumpkin-highlight: #ffcf7a;
+  --pumpkin-body: #ef8a2a;
+  --pumpkin-shadow: #a94a09;
+  --pumpkin-stem: #6c7d3a;
+  --pumpkin-face: #ffd166;
+  --pumpkin-glow: rgb(255 140 40 / 55%);
+  --moon: #ffd9a0;
+  --moon-glow: rgb(255 190 90 / 45%);
+  --star: #ffe0a8;
+  --spider: #f0d6b0;
+  --ground-top: #1a0d05;
+  --ground-bottom: #080403;
+  --ground-back: #120a05;
+}
+
+:root[data-season="jackolantern"] body {
+  background:
+    radial-gradient(90% 55% at 50% 108%, rgb(255 120 30 / 34%), transparent 72%),
+    radial-gradient(55% 38% at 50% 100%, rgb(255 190 90 / 16%), transparent 72%), #080504;
+  background-attachment: fixed;
+}
+
+:root[data-season="jackolantern"] .theme-customizer,
+:root[data-season="jackolantern"] .changelog-modal {
+  background: linear-gradient(180deg, #1a0f06, #0a0603 65%);
+  box-shadow:
+    0 18px 60px rgb(0 0 0 / 52%),
+    0 0 50px rgb(255 120 30 / 14%);
+}
+
+:root[data-season="jackolantern"] .progress-ring:not(.line) {
+  box-shadow:
+    0 0 38px rgb(255 130 30 / 22%),
+    0 0 90px rgb(255 170 70 / 10%);
+}
+
+:root[data-season="jackolantern"] .progress-ring.line::before {
+  box-shadow: 0 0 22px rgb(255 140 40 / 35%);
+}
+
+:root[data-season="jackolantern"] .current-period,
+:root[data-season="jackolantern"] .countdown {
+  text-shadow: 0 0 30px rgb(255 160 60 / 18%);
+}
+
+:root[data-season="jackolantern"] .schedule-button,
+:root[data-season="jackolantern"] .clock-toggle {
+  border-color: var(--accent);
+  box-shadow: 0 0 22px rgb(255 140 40 / 14%);
 }
 
 :root[data-theme="dark"] .day-white {
   text-shadow: none;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) .day-white {
-    text-shadow: none;
-  }
 }
 
 *,
@@ -230,18 +349,6 @@ textarea {
   transform: rotate(45deg) scale(0.6);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) .theme-icon-sun {
-    opacity: 1;
-    transform: none;
-  }
-
-  :root:not([data-theme="light"]) .theme-icon-moon {
-    opacity: 0;
-    transform: rotate(45deg) scale(0.6);
-  }
-}
-
 #dayMessage {
   margin: 0 0 55px;
   font-size: clamp(36px, 7vw, 64px);
@@ -348,6 +455,23 @@ textarea {
   place-items: center;
 }
 
+.theme-select {
+  display: grid;
+  gap: 6px;
+  margin-bottom: 4px;
+  font-size: 15px;
+}
+
+.theme-select select {
+  width: 100%;
+  padding: 8px 10px;
+  border: 2px solid var(--border);
+  border-radius: 8px;
+  background: var(--field);
+  color: var(--text);
+  font: inherit;
+}
+
 .theme-option {
   display: flex;
   align-items: center;
@@ -361,7 +485,7 @@ textarea {
   flex-shrink: 0;
   width: 18px;
   height: 18px;
-  accent-color: var(--blue-day);
+  accent-color: var(--accent);
 }
 
 .theme-option + .theme-option {
@@ -504,7 +628,7 @@ textarea {
 .notif-option input {
   width: 18px;
   height: 18px;
-  accent-color: var(--blue-day);
+  accent-color: var(--accent);
 }
 
 .notif-option input:disabled {
@@ -603,7 +727,7 @@ textarea {
 .clock-toggle:focus-visible,
 .schedule-header select:focus-visible,
 .theme-toggle:focus-visible {
-  outline: 3px solid var(--blue-day);
+  outline: 3px solid var(--accent);
   outline-offset: 3px;
 }
 
@@ -713,7 +837,7 @@ textarea {
 }
 
 .edit-btn:focus-visible {
-  outline: 3px solid var(--blue-day);
+  outline: 3px solid var(--accent);
   outline-offset: 1px;
 }
 
@@ -728,7 +852,7 @@ textarea {
   min-width: 0;
   max-width: 16rem;
   padding: 4px 8px;
-  border: 2px solid var(--blue-day);
+  border: 2px solid var(--accent);
   border-radius: 8px;
   background: var(--field);
   color: var(--text);
@@ -948,14 +1072,14 @@ textarea {
 }
 
 .daily-message a {
-  color: var(--blue-day);
+  color: var(--accent);
   font-weight: 700;
   text-decoration-thickness: 1.5px;
   text-underline-offset: 2px;
 }
 
 .daily-message a:focus-visible {
-  outline: 3px solid var(--blue-day);
+  outline: 3px solid var(--accent);
   outline-offset: 2px;
   border-radius: 3px;
 }
@@ -1007,7 +1131,7 @@ textarea {
 }
 
 .changelog-toggle:focus-visible {
-  outline: 3px solid var(--blue-day);
+  outline: 3px solid var(--accent);
   outline-offset: 3px;
 }
 
@@ -1118,7 +1242,7 @@ textarea {
 }
 
 .changelog-close:focus-visible {
-  outline: 3px solid var(--blue-day);
+  outline: 3px solid var(--accent);
   outline-offset: 2px;
 }
 
@@ -1186,7 +1310,7 @@ textarea {
 }
 
 .feedback-link {
-  color: var(--blue-day);
+  color: var(--accent);
 }
 
 .theme-toggle svg {
@@ -1332,6 +1456,39 @@ textarea {
   opacity: 0.7;
 }
 
+.season-locked .theme-control-title,
+.season-locked .rgb-control,
+.season-locked .hex-control,
+.season-locked .theme-reset-button {
+  opacity: 0.5;
+}
+
+.season-locked input,
+.season-locked button {
+  cursor: not-allowed;
+}
+
+.season-restore-button {
+  width: 100%;
+  margin-top: 4px;
+  padding: 9px 12px;
+
+  border: 2px solid var(--accent);
+  border-radius: 999px;
+
+  background: transparent;
+  color: var(--text);
+
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.season-restore-button:hover {
+  background: var(--hover);
+}
+
 .contrast-warning {
   margin: 0 0 14px;
   padding: 10px 12px;
@@ -1359,7 +1516,7 @@ textarea {
 
 .rgb-control input[type="range"] {
   width: 100%;
-  accent-color: var(--blue-day);
+  accent-color: var(--accent);
 }
 
 .rgb-control output {
@@ -1429,8 +1586,9 @@ textarea {
 }
 
 .theme-customizer button:focus-visible,
-.theme-customizer input:focus-visible {
-  outline: 3px solid var(--blue-day);
+.theme-customizer input:focus-visible,
+.theme-customizer select:focus-visible {
+  outline: 3px solid var(--accent);
   outline-offset: 2px;
 }
 
@@ -1473,4 +1631,460 @@ textarea {
 
 .danger:hover {
   background: #b70000;
+}
+
+.season-decor {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+
+  display: none;
+  overflow: hidden;
+
+  pointer-events: none;
+}
+
+:root[data-season="halloween"]:not([data-season-effects="off"]) .season-decor,
+:root[data-season="jackolantern"]:not([data-season-effects="off"]) .season-decor {
+  display: block;
+}
+
+.season-decor-vignette {
+  position: absolute;
+  inset: 0;
+
+  background:
+    radial-gradient(30% 45% at 4% 100%, rgb(244 150 60 / 12%), transparent 72%),
+    radial-gradient(26% 38% at 96% 100%, rgb(244 150 60 / 9%), transparent 72%),
+    radial-gradient(120% 80% at 50% 0%, transparent 60%, rgb(40 24 8 / 9%) 100%),
+    linear-gradient(0deg, rgb(40 24 8 / 8%), transparent 30%);
+}
+
+:root[data-theme="dark"] .season-decor-vignette,
+:root[data-season="jackolantern"] .season-decor-vignette {
+  background:
+    radial-gradient(30% 45% at 4% 100%, rgb(255 150 60 / 22%), transparent 72%),
+    radial-gradient(26% 38% at 96% 100%, rgb(255 150 60 / 16%), transparent 72%),
+    radial-gradient(120% 80% at 50% 0%, transparent 42%, rgb(0 0 0 / 55%) 100%),
+    linear-gradient(0deg, rgb(0 0 0 / 45%), transparent 38%);
+}
+
+:root[data-season="jackolantern"] .season-decor-vignette {
+  background:
+    radial-gradient(42% 55% at 50% 108%, rgb(255 120 30 / 38%), transparent 72%),
+    radial-gradient(28% 42% at 4% 100%, rgb(255 150 50 / 30%), transparent 72%),
+    radial-gradient(28% 42% at 96% 100%, rgb(255 150 50 / 26%), transparent 72%),
+    radial-gradient(120% 80% at 50% 0%, transparent 38%, rgb(0 0 0 / 65%) 100%),
+    linear-gradient(0deg, rgb(255 120 30 / 12%), transparent 32%);
+}
+
+.season-sprite {
+  position: absolute;
+  width: 0;
+  height: 0;
+  overflow: hidden;
+}
+
+.season-web {
+  position: absolute;
+
+  width: clamp(92px, 13vw, 150px);
+  height: auto;
+
+  color: var(--text);
+  opacity: 0.16;
+}
+
+.season-web--left {
+  top: 72px;
+  left: -10px;
+}
+
+.season-web--right {
+  right: -10px;
+  bottom: -10px;
+
+  rotate: 180deg;
+  opacity: 0.12;
+}
+
+.season-spider {
+  position: absolute;
+  top: 128px;
+  left: 86px;
+
+  width: 20px;
+  height: auto;
+
+  opacity: 0.6;
+  transform-origin: 50% 0;
+  animation: season-spider-sway 7s ease-in-out infinite;
+}
+
+.season-moon {
+  position: absolute;
+  top: 13%;
+  right: 9%;
+
+  width: clamp(64px, 7vw, 104px);
+  height: auto;
+
+  opacity: 0.55;
+  filter: drop-shadow(0 0 26px var(--moon-glow));
+}
+
+.season-star {
+  position: absolute;
+
+  width: 3px;
+  height: 3px;
+
+  border-radius: 50%;
+  background: var(--star);
+  opacity: 0.4;
+
+  animation: season-star-twinkle 6s ease-in-out infinite;
+  animation-delay: var(--star-delay, 0s);
+}
+
+.season-star:nth-of-type(1) {
+  top: 10%;
+  left: 14%;
+
+  --star-delay: -1s;
+}
+
+.season-star:nth-of-type(2) {
+  top: 7%;
+  right: 24%;
+
+  width: 4px;
+  height: 4px;
+
+  --star-delay: -3.5s;
+
+  animation-duration: 7.5s;
+}
+
+.season-star:nth-of-type(3) {
+  top: 26%;
+  right: 14%;
+
+  --star-delay: -5s;
+
+  animation-duration: 5.5s;
+}
+
+.season-star:nth-of-type(4) {
+  top: 40%;
+  left: 6%;
+
+  width: 2px;
+  height: 2px;
+
+  --star-delay: -2s;
+
+  animation-duration: 8s;
+}
+
+.season-star:nth-of-type(5) {
+  top: 58%;
+  right: 8%;
+
+  --star-delay: -4s;
+}
+
+.season-star:nth-of-type(6) {
+  top: 76%;
+  left: 12%;
+
+  width: 2px;
+  height: 2px;
+
+  --star-delay: -2.5s;
+
+  animation-duration: 7s;
+}
+
+.season-ground {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+
+  width: 100%;
+  height: clamp(64px, 9vh, 118px);
+}
+
+.season-pumpkin {
+  position: absolute;
+  bottom: -18px;
+
+  height: auto;
+
+  pointer-events: auto;
+  touch-action: manipulation;
+
+  filter: drop-shadow(0 12px 28px var(--pumpkin-glow));
+  transition:
+    --pumpkin-face 0.35s ease,
+    filter 0.35s ease,
+    scale 0.35s ease;
+}
+
+.pumpkin-pact .season-pumpkin {
+  --pumpkin-face: #ffe08a;
+  filter: drop-shadow(0 0 34px rgb(255 180 70 / 75%));
+  scale: 1.04;
+}
+
+.season-pumpkin--left {
+  left: clamp(-42px, -3vw, -14px);
+  width: clamp(104px, 14vw, 176px);
+
+  rotate: -6deg;
+}
+
+.season-pumpkin--right {
+  right: clamp(-30px, -2vw, -10px);
+  bottom: -14px;
+  width: clamp(76px, 10vw, 128px);
+
+  rotate: 8deg;
+  transition-delay: 0.08s;
+}
+
+.season-pumpkin--small {
+  left: 17%;
+  bottom: -10px;
+  width: clamp(48px, 6vw, 76px);
+
+  rotate: 4deg;
+  opacity: 0.92;
+  transition-delay: 0.16s;
+}
+
+.season-ghost {
+  position: absolute;
+
+  height: auto;
+
+  opacity: var(--ghost-alpha, 0.45);
+  filter: drop-shadow(0 10px 18px var(--ghost-shadow, transparent));
+  animation: season-ghost-float var(--ghost-duration, 18s) ease-in-out infinite;
+  animation-delay: var(--ghost-delay, 0s);
+}
+
+.season-ghost--one {
+  top: 18%;
+  left: 4%;
+
+  width: clamp(44px, 5.4vw, 74px);
+
+  --ghost-duration: 14s;
+}
+
+.season-ghost--two {
+  top: 38%;
+  right: 5%;
+
+  width: clamp(32px, 4.2vw, 54px);
+
+  --ghost-duration: 17s;
+  --ghost-delay: -7s;
+
+  animation-direction: reverse;
+}
+
+.season-ghost--three {
+  top: 66%;
+  left: 9%;
+
+  width: clamp(28px, 3.6vw, 44px);
+
+  --ghost-duration: 20s;
+  --ghost-delay: -13s;
+}
+
+.season-ghost--four {
+  top: 54%;
+  right: 10%;
+
+  width: clamp(24px, 3vw, 40px);
+
+  --ghost-duration: 15s;
+  --ghost-delay: -10s;
+}
+
+@keyframes season-ghost-float {
+  0%,
+  100% {
+    translate: 0 0;
+    rotate: -2deg;
+  }
+
+  25% {
+    translate: 16px -22px;
+    rotate: 2deg;
+  }
+
+  50% {
+    translate: 36px -6px;
+    rotate: -1deg;
+  }
+
+  75% {
+    translate: 14px -30px;
+    rotate: 1.5deg;
+  }
+}
+
+@keyframes season-spider-sway {
+  0%,
+  100% {
+    transform: rotate(-3deg);
+  }
+
+  50% {
+    transform: rotate(3deg);
+  }
+}
+
+@keyframes season-star-twinkle {
+  0%,
+  100% {
+    opacity: 0.18;
+  }
+
+  50% {
+    opacity: 0.85;
+  }
+}
+
+.season-candy-burst {
+  position: fixed;
+  inset: 0;
+  z-index: 1100;
+
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.season-candy {
+  position: absolute;
+  top: 60%;
+  left: 50%;
+
+  width: 8px;
+  height: 14px;
+
+  border-radius: 2px;
+  background: var(--candy-color, #ff9d3c);
+  opacity: 0;
+
+  animation: season-candy-fly 1.9s ease-out forwards;
+  animation-delay: var(--candy-delay, 0s);
+}
+
+@keyframes season-candy-fly {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -50%) rotate(0deg) scale(0.5);
+  }
+
+  15% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0;
+    transform: translate(calc(-50% + var(--candy-x, 0px)), calc(-50% + var(--candy-y, 0px)))
+      rotate(var(--candy-r, 0deg)) scale(1);
+  }
+}
+
+.season-toast {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  z-index: 1200;
+
+  max-width: min(440px, calc(100vw - 32px));
+  padding: 12px 18px;
+
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--background);
+  color: var(--text);
+  box-shadow: 0 14px 40px rgb(0 0 0 / 28%);
+
+  font-size: 14px;
+  line-height: 1.4;
+  text-align: center;
+
+  pointer-events: none;
+  transform: translateX(-50%);
+  animation: season-toast-in 0.3s ease-out;
+}
+
+@keyframes season-toast-in {
+  from {
+    opacity: 0;
+    translate: 0 8px;
+  }
+
+  to {
+    opacity: 1;
+    translate: 0 0;
+  }
+}
+
+@media (max-width: 800px) {
+  .season-ghost--two,
+  .season-ghost--three,
+  .season-ghost--four,
+  .season-pumpkin--small,
+  .season-web--left,
+  .season-web--right,
+  .season-spider,
+  .season-moon,
+  .season-star:nth-of-type(2),
+  .season-star:nth-of-type(3),
+  .season-star:nth-of-type(4),
+  .season-star:nth-of-type(6) {
+    display: none;
+  }
+
+  .season-pumpkin--left {
+    left: -26px;
+    bottom: -12px;
+    width: 92px;
+  }
+
+  .season-pumpkin--right {
+    right: -18px;
+    bottom: -10px;
+    width: 66px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .season-ghost,
+  .season-star,
+  .season-spider,
+  .season-toast {
+    animation: none;
+  }
+
+  .season-pumpkin {
+    transition: none;
+  }
+
+  .pumpkin-pact .season-pumpkin {
+    scale: 1;
+  }
+
+  .season-candy-burst {
+    display: none;
+  }
 }

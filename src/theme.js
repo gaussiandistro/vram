@@ -1,6 +1,6 @@
 import { loadStorage, removeStorage, saveStorage } from "./storage.js";
 
-const THEME_SETTINGS_STORAGE_KEY = "vram-theme-settings";
+export const THEME_SETTINGS_STORAGE_KEY = "vram-theme-settings";
 const LEGACY_THEME_STORAGE_KEY = "vram-theme";
 
 const THEMES = new Set(["light", "dark"]);
@@ -35,6 +35,10 @@ if (loadStorage(LEGACY_THEME_STORAGE_KEY)) persistSettings();
 
 export function getThemeSettings() {
   return settings;
+}
+
+export function reloadThemeSettings() {
+  settings = loadSettings();
 }
 
 export function updateThemeSettings(patch) {

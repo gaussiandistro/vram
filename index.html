@@ -16,6 +16,68 @@
 
     <title>VRAM (LHWHS Schedule Tracker)</title>
 
+    <script>
+      (() => {
+        const root = document.documentElement;
+        let settings = {};
+        let legacyMode = null;
+
+        try {
+          const stored = JSON.parse(localStorage.getItem("vram-theme-settings"));
+          if (stored && typeof stored === "object") settings = stored;
+          legacyMode = localStorage.getItem("vram-theme");
+        } catch {
+          // no error handling here
+        }
+
+        const mode = settings.mode ?? legacyMode;
+        const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+
+        root.dataset.theme =
+          mode === "light" || mode === "dark" ? mode : prefersDark ? "dark" : "light";
+
+        const seasons = [
+          { id: "halloween", start: [10, 1], end: [10, 31], mode: "dark" },
+          { id: "jackolantern", mode: "dark", secret: true },
+        ];
+        const today = new Date();
+        const todayKey = (today.getMonth() + 1) * 100 + today.getDate();
+        const preference = settings.season;
+
+        let season = null;
+
+        if (preference && preference !== "auto" && preference !== "off") {
+          season = seasons.find((candidate) => candidate.id === preference) ?? null;
+        }
+
+        if (!season && preference !== "off") {
+          season =
+            seasons.find(({ secret, start, end }) => {
+              if (secret) return false;
+
+              const startKey = start[0] * 100 + start[1];
+              const endKey = end[0] * 100 + end[1];
+
+              return startKey <= endKey
+                ? todayKey >= startKey && todayKey <= endKey
+                : todayKey >= startKey || todayKey <= endKey;
+            }) ?? null;
+        }
+
+        if (season) {
+          root.dataset.season = season.id;
+          if (season.mode) root.dataset.theme = season.mode;
+        } else {
+          if (settings.textColor) root.style.setProperty("--text", settings.textColor);
+          if (settings.backgroundColor) {
+            root.style.setProperty("--background", settings.backgroundColor);
+          }
+        }
+
+        if (settings.seasonEffects === false) root.dataset.seasonEffects = "off";
+      })();
+    </script>
+
     <link
       rel="preload"
       href="/fonts/roboto-slab-var.woff2"
@@ -30,6 +92,239 @@
   </head>
 
   <body>
+    <div class="season-decor" aria-hidden="true">
+      <div class="season-decor-vignette"></div>
+
+      <svg
+        class="season-web season-web--left"
+        width="0"
+        height="0"
+        viewBox="0 0 100 100"
+        aria-hidden="true"
+        focusable="false"
+      >
+        <g fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="1.2">
+          <path d="M0 0v100M0 0h100M0 0l38 92M0 0l70.7 70.7M0 0l92 38" />
+          <circle cx="0" cy="0" r="20" />
+          <circle cx="0" cy="0" r="40" />
+          <circle cx="0" cy="0" r="60" />
+          <circle cx="0" cy="0" r="80" />
+        </g>
+      </svg>
+
+      <svg
+        class="season-web season-web--right"
+        width="0"
+        height="0"
+        viewBox="0 0 100 100"
+        aria-hidden="true"
+        focusable="false"
+      >
+        <g fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="1.2">
+          <path d="M0 0v100M0 0h100M0 0l38 92M0 0l70.7 70.7M0 0l92 38" />
+          <circle cx="0" cy="0" r="20" />
+          <circle cx="0" cy="0" r="40" />
+          <circle cx="0" cy="0" r="60" />
+          <circle cx="0" cy="0" r="80" />
+        </g>
+      </svg>
+      <svg
+        class="season-moon"
+        width="0"
+        height="0"
+        viewBox="0 0 100 100"
+        aria-hidden="true"
+        focusable="false"
+      >
+        <defs>
+          <mask id="seasonMoonCut" maskUnits="userSpaceOnUse" maskContentUnits="userSpaceOnUse">
+            <rect width="100" height="100" fill="#fff" />
+            <circle cx="68" cy="40" r="34" fill="#000" />
+          </mask>
+        </defs>
+        <circle cx="50" cy="50" r="40" fill="var(--moon)" mask="url(#seasonMoonCut)" />
+      </svg>
+
+      <span class="season-star"></span>
+      <span class="season-star"></span>
+      <span class="season-star"></span>
+      <span class="season-star"></span>
+      <span class="season-star"></span>
+      <span class="season-star"></span>
+
+      <svg class="season-sprite" width="0" height="0" aria-hidden="true" focusable="false">
+        <defs>
+          <radialGradient id="seasonPumpkinFill" cx="42%" cy="34%" r="72%">
+            <stop offset="0" stop-color="var(--pumpkin-highlight)" />
+            <stop offset="0.58" stop-color="var(--pumpkin-body)" />
+            <stop offset="1" stop-color="var(--pumpkin-shadow)" />
+          </radialGradient>
+
+          <symbol id="seasonPumpkin" viewBox="0 0 120 104">
+            <ellipse cx="60" cy="66" rx="48" ry="30" fill="var(--pumpkin-shadow)" opacity="0.3" />
+            <ellipse cx="60" cy="58" rx="50" ry="38" fill="url(#seasonPumpkinFill)" />
+            <path
+              d="M38 26c-11 7-17 21-16 36 1 14 8 25 18 30-9-14-11-34-8-51 1-6 3-11 6-15z"
+              fill="var(--pumpkin-shadow)"
+              opacity="0.32"
+            />
+            <path
+              d="M82 26c11 7 17 21 16 36-1 14-8 25-18 30 9-14 11-34 8-51-1-6-3-11-6-15z"
+              fill="var(--pumpkin-shadow)"
+              opacity="0.32"
+            />
+            <path
+              d="M55 21c-7 11-9 30-4 47 2 8 5 13 9 16-5-19-5-44 1-63z"
+              fill="var(--pumpkin-highlight)"
+              opacity="0.35"
+            />
+            <path d="M44 20c-1-7 3-11 8-16 0 7 4 10 5 16z" fill="var(--pumpkin-stem)" />
+            <path d="M36 50l15-10-4 15z" fill="var(--pumpkin-face)" />
+            <path d="M84 50l-15-10 4 15z" fill="var(--pumpkin-face)" />
+            <path d="M60 58l-5 8h10z" fill="var(--pumpkin-face)" />
+            <path d="M38 70h44l-7 10-7-6-8 8-8-8-7 6z" fill="var(--pumpkin-face)" />
+          </symbol>
+
+          <symbol id="seasonGhost" viewBox="0 0 64 84">
+            <path
+              d="M32 4C17 4 9 15 9 29v46c5-4 9 2 14-2 4-4 7 4 12 0 5 3 8-2 12 2 4-2 8-1 8-4V29C55 15 47 4 32 4z"
+              fill="var(--ghost-fill)"
+            />
+            <ellipse cx="24" cy="29" rx="3.4" ry="4.6" fill="var(--ghost-eyes)" />
+            <ellipse cx="40" cy="29" rx="3.4" ry="4.6" fill="var(--ghost-eyes)" />
+            <ellipse cx="32" cy="43" rx="3.2" ry="4.4" fill="var(--ghost-eyes)" opacity="0.75" />
+          </symbol>
+
+          <symbol id="seasonSpider" viewBox="0 0 24 34">
+            <line x1="12" y1="0" x2="12" y2="12" stroke="var(--spider)" stroke-width="0.8" />
+            <ellipse cx="12" cy="18" rx="4.4" ry="5.6" fill="var(--spider)" />
+            <circle cx="12" cy="12.6" r="2.8" fill="var(--spider)" />
+            <path
+              d="M8.2 14.5 2.6 10M8 18H1.8M8.2 21.5 2.6 26M15.8 14.5 21.4 10M16 18h6.2M15.8 21.5 21.4 26"
+              fill="none"
+              stroke="var(--spider)"
+              stroke-linecap="round"
+              stroke-width="1"
+            />
+          </symbol>
+        </defs>
+      </svg>
+
+      <svg
+        class="season-ghost season-ghost--one"
+        width="0"
+        height="0"
+        viewBox="0 0 64 84"
+        aria-hidden="true"
+        focusable="false"
+      >
+        <use href="#seasonGhost" width="100%" height="100%" />
+      </svg>
+
+      <svg
+        class="season-ghost season-ghost--two"
+        width="0"
+        height="0"
+        viewBox="0 0 64 84"
+        aria-hidden="true"
+        focusable="false"
+      >
+        <use href="#seasonGhost" width="100%" height="100%" />
+      </svg>
+
+      <svg
+        class="season-ghost season-ghost--three"
+        width="0"
+        height="0"
+        viewBox="0 0 64 84"
+        aria-hidden="true"
+        focusable="false"
+      >
+        <use href="#seasonGhost" width="100%" height="100%" />
+      </svg>
+
+      <svg
+        class="season-ghost season-ghost--four"
+        width="0"
+        height="0"
+        viewBox="0 0 64 84"
+        aria-hidden="true"
+        focusable="false"
+      >
+        <use href="#seasonGhost" width="100%" height="100%" />
+      </svg>
+
+      <svg
+        class="season-spider"
+        width="0"
+        height="0"
+        viewBox="0 0 24 34"
+        aria-hidden="true"
+        focusable="false"
+      >
+        <use href="#seasonSpider" width="100%" height="100%" />
+      </svg>
+
+      <svg
+        class="season-ground"
+        width="0"
+        height="0"
+        viewBox="0 0 1440 120"
+        preserveAspectRatio="none"
+        aria-hidden="true"
+        focusable="false"
+      >
+        <defs>
+          <linearGradient id="seasonGroundFill" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stop-color="var(--ground-top)" />
+            <stop offset="1" stop-color="var(--ground-bottom)" />
+          </linearGradient>
+        </defs>
+        <path
+          d="M0 120V104C200 96 380 110 580 106S940 92 1140 102 1320 108 1440 100V120Z"
+          fill="var(--ground-back)"
+          opacity="0.7"
+        />
+        <path
+          d="M0 120V94C160 82 300 108 460 100S760 78 920 90 1260 104 1440 92V120Z"
+          fill="url(#seasonGroundFill)"
+        />
+      </svg>
+
+      <svg
+        class="season-pumpkin season-pumpkin--left"
+        width="0"
+        height="0"
+        viewBox="0 0 120 104"
+        aria-hidden="true"
+        focusable="false"
+      >
+        <use href="#seasonPumpkin" width="100%" height="100%" />
+      </svg>
+
+      <svg
+        class="season-pumpkin season-pumpkin--right"
+        width="0"
+        height="0"
+        viewBox="0 0 120 104"
+        aria-hidden="true"
+        focusable="false"
+      >
+        <use href="#seasonPumpkin" width="100%" height="100%" />
+      </svg>
+
+      <svg
+        class="season-pumpkin season-pumpkin--small"
+        width="0"
+        height="0"
+        viewBox="0 0 120 104"
+        aria-hidden="true"
+        focusable="false"
+      >
+        <use href="#seasonPumpkin" width="100%" height="100%" />
+      </svg>
+    </div>
+
     <button
       id="themeCustomizerToggle"
       class="theme-toggle"
@@ -98,6 +393,36 @@
           <input id="endOfDayCountdown" type="checkbox" />
           <span>Show a countdown to the end of the school day</span>
         </label>
+      </section>
+
+      <section class="theme-control-section">
+        <div class="theme-control-title">
+          <strong>Seasonal Theme</strong>
+        </div>
+
+        <label class="theme-select" for="themeSeason">
+          <span>Theme</span>
+          <select id="themeSeason">
+            <option value="auto">Auto (follow the calendar)</option>
+            <option value="off">Off</option>
+          </select>
+        </label>
+
+        <label class="theme-option" for="seasonEffects">
+          <input id="seasonEffects" type="checkbox" checked />
+          <span>Show seasonal decorations</span>
+        </label>
+
+        <p class="theme-help">
+          You can choose to keep a certain theme on if you'd like, otherwise the theme will be
+          automatically determined.
+        </p>
+
+        <p id="seasonOverrideNote" class="theme-help hidden"></p>
+
+        <button id="seasonRestoreNormal" class="season-restore-button hidden" type="button">
+          Use my normal theme
+        </button>
       </section>
 
       <section id="notifSection" class="theme-control-section">
@@ -172,11 +497,15 @@
         <button id="themeFontReset" class="theme-reset-button" type="button">Reset font</button>
       </section>
 
-      <section class="theme-control-section">
+      <section id="textColorSection" class="theme-control-section">
         <div class="theme-control-title">
           <strong>Text color</strong>
           <span id="themeTextPreview" class="color-preview"></span>
         </div>
+
+        <p class="theme-help season-locked-hint hidden">
+          Use your normal theme to edit custom colors.
+        </p>
 
         <div class="rgb-control">
           <label for="themeTextR">R</label>
@@ -213,11 +542,15 @@
         </button>
       </section>
 
-      <section class="theme-control-section">
+      <section id="backgroundColorSection" class="theme-control-section">
         <div class="theme-control-title">
           <strong>Background color</strong>
           <span id="themeBackgroundPreview" class="color-preview"></span>
         </div>
+
+        <p class="theme-help season-locked-hint hidden">
+          Use your normal theme to edit custom colors.
+        </p>
 
         <div class="rgb-control">
           <label for="themeBackgroundR">R</label>
@@ -460,6 +793,15 @@
         </div>
         <br />
         <h2 id="changelogTitle">Changelog</h2>
+
+        <div class="changelog-entry">
+          <h3>Halloween Theme</h3>
+          <p class="changelog-date">October 28, 2026</p>
+          <ul>
+            <li>Added theming for halloween, with an easter egg</li>
+            <li>If the pumpkins seem to be watching you, they probably are...</li>
+          </ul>
+        </div>
 
         <div class="changelog-entry">
           <h3>Extra Settings</h3>

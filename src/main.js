@@ -33,14 +33,20 @@ import {
   updateNotificationUI,
 } from "./render.js";
 
+import { initPumpkinPact } from "./pumpkinPact.js";
+
 import { loadScheduleData } from "./schedule.js";
+
+import { applyTheme, initTheme } from "./themeApply.js";
 
 import { initThemeCustomizer } from "./themeCustomizer.js";
 
 import { toInputDate, toInputTime } from "./time.js";
 
 updateClockFormatControl();
+initTheme();
 initThemeCustomizer();
+initPumpkinPact();
 
 elements.clockFormatToggle?.addEventListener("change", () => {
   setClockFormat(elements.clockFormatToggle.checked ? "24" : "12");
@@ -155,6 +161,7 @@ if (import.meta.env.DEV && elements.devPanel) {
     }
 
     applySimulatedTime(parsed);
+    applyTheme();
     updateDevStatus();
     updateEverything();
     renderSchedule(currentDateTime(), true);
@@ -162,6 +169,7 @@ if (import.meta.env.DEV && elements.devPanel) {
 
   elements.devReset?.addEventListener("click", () => {
     resetSimulatedTime();
+    applyTheme();
     if (elements.devDate) elements.devDate.value = toInputDate(new Date());
     if (elements.devTime) elements.devTime.value = toInputTime(new Date());
     updateDevStatus();
