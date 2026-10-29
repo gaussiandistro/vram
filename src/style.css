@@ -1718,7 +1718,7 @@ textarea {
 
   opacity: 0.6;
   transform-origin: 50% 0;
-  animation: season-spider-sway 7s ease-in-out infinite;
+  animation: season-spider-sway 4s ease-in-out infinite;
 }
 
 .season-moon {
@@ -1942,11 +1942,11 @@ textarea {
 @keyframes season-spider-sway {
   0%,
   100% {
-    transform: rotate(-3deg);
+    transform: rotate(-10deg);
   }
 
   50% {
-    transform: rotate(3deg);
+    transform: rotate(10deg);
   }
 }
 
