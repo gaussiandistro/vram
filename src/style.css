@@ -143,12 +143,21 @@
   --ground-bottom: #080403;
   --ground-back: #120a05;
 }
-
+/*
 :root[data-season="jackolantern"] body {
   background:
     radial-gradient(90% 55% at 50% 108%, rgb(255 120 30 / 34%), transparent 72%),
     radial-gradient(55% 38% at 50% 100%, rgb(255 190 90 / 16%), transparent 72%), #080504;
   background-attachment: fixed;
+}
+*/
+
+:root[data-season="jackolantern"] body {
+  background:
+    linear-gradient(rgb(0 0 0 / 35%), rgb(0 0 0 / 55%)),
+    url("/dreamstime-dark-graveyard.png") center / cover no-repeat fixed;
+
+  background-color: #080504;
 }
 
 :root[data-season="jackolantern"] .theme-customizer,
@@ -1636,7 +1645,7 @@ textarea {
 .season-decor {
   position: fixed;
   inset: 0;
-  z-index: -1;
+  z-index: 1;
 
   display: none;
   overflow: hidden;
@@ -1671,7 +1680,7 @@ textarea {
 
 :root[data-season="jackolantern"] .season-decor-vignette {
   background:
-    radial-gradient(42% 55% at 50% 108%, rgb(255 120 30 / 38%), transparent 72%),
+    /* radial-gradient(42% 55% at 50% 108%, rgb(255 120 30 / 38%), transparent 72%), */
     radial-gradient(28% 42% at 4% 100%, rgb(255 150 50 / 30%), transparent 72%),
     radial-gradient(28% 42% at 96% 100%, rgb(255 150 50 / 26%), transparent 72%),
     radial-gradient(120% 80% at 50% 0%, transparent 38%, rgb(0 0 0 / 65%) 100%),
@@ -1876,66 +1885,232 @@ textarea {
 }
 
 .season-ghost--one {
-  top: 18%;
-  left: 4%;
-
+  top: 20%;
+  left: 20%;
   width: clamp(44px, 5.4vw, 74px);
 
-  --ghost-duration: 14s;
+  animation: ghost-float-one 24s ease-in-out infinite;
 }
 
 .season-ghost--two {
-  top: 38%;
-  right: 5%;
-
+  top: 28%;
+  right: 20%;
   width: clamp(32px, 4.2vw, 54px);
 
-  --ghost-duration: 17s;
-  --ghost-delay: -7s;
-
-  animation-direction: reverse;
+  animation: ghost-float-two 29s ease-in-out infinite;
+  animation-delay: -9s;
 }
 
 .season-ghost--three {
-  top: 66%;
-  left: 9%;
-
+  top: 80%;
+  left: 20%;
   width: clamp(28px, 3.6vw, 44px);
 
-  --ghost-duration: 20s;
-  --ghost-delay: -13s;
+  animation: ghost-float-three 32s ease-in-out infinite;
+  animation-delay: -17s;
 }
 
 .season-ghost--four {
-  top: 54%;
+  top: 84%;
   right: 10%;
-
   width: clamp(24px, 3vw, 40px);
 
-  --ghost-duration: 15s;
-  --ghost-delay: -10s;
+  animation: ghost-float-four 27s ease-in-out infinite;
+  animation-delay: -12s;
 }
 
-@keyframes season-ghost-float {
+.season-ghost--five {
+  top: 12%;
+  left: 45%;
+  width: clamp(30px, 4vw, 56px);
+
+  animation: ghost-float-five 28s ease-in-out infinite;
+  animation-delay: -14s;
+}
+
+.season-ghost--six {
+  top: 55%;
+  right: 15%;
+  width: clamp(36px, 4.8vw, 64px);
+
+  animation: ghost-float-six 34s ease-in-out infinite;
+  animation-delay: -21s;
+}
+
+.season-ghost--seven {
+  top: 65%;
+  left: 8%;
+  width: clamp(26px, 3.4vw, 46px);
+
+  animation: ghost-float-seven 30s ease-in-out infinite;
+  animation-delay: -8s;
+}
+
+@keyframes ghost-float-one {
+  0%,
+  100% {
+    translate: 0 0;
+    rotate: -3deg;
+  }
+  20% {
+    translate: 20vw -12vh;
+    rotate: 5deg;
+  }
+  40% {
+    translate: 48vw 18vh;
+    rotate: -4deg;
+  }
+  60% {
+    translate: 25vw 50vh;
+    rotate: 6deg;
+  }
+  80% {
+    translate: -15vw 25vh;
+    rotate: -5deg;
+  }
+}
+
+@keyframes ghost-float-two {
+  0%,
+  100% {
+    translate: 0 0;
+    rotate: 3deg;
+  }
+  20% {
+    translate: -25vw 20vh;
+    rotate: -5deg;
+  }
+  40% {
+    translate: -55vw -10vh;
+    rotate: 4deg;
+  }
+  60% {
+    translate: -30vw 45vh;
+    rotate: -6deg;
+  }
+  80% {
+    translate: 15vw 15vh;
+    rotate: 3deg;
+  }
+}
+
+@keyframes ghost-float-three {
   0%,
   100% {
     translate: 0 0;
     rotate: -2deg;
   }
-
-  25% {
-    translate: 16px -22px;
-    rotate: 2deg;
+  20% {
+    translate: 15vw -25vh;
+    rotate: 6deg;
   }
-
-  50% {
-    translate: 36px -6px;
-    rotate: -1deg;
+  40% {
+    translate: 45vw -55vh;
+    rotate: -5deg;
   }
+  60% {
+    translate: 60vw -30vh;
+    rotate: 4deg;
+  }
+  80% {
+    translate: 20vw -65vh;
+    rotate: -4deg;
+  }
+}
 
-  75% {
-    translate: 14px -30px;
-    rotate: 1.5deg;
+@keyframes ghost-float-four {
+  0%,
+  100% {
+    translate: 0 0;
+    rotate: 4deg;
+  }
+  20% {
+    translate: -30vw -20vh;
+    rotate: -6deg;
+  }
+  40% {
+    translate: -65vw -45vh;
+    rotate: 5deg;
+  }
+  60% {
+    translate: -35vw -70vh;
+    rotate: -4deg;
+  }
+  80% {
+    translate: 12vw -30vh;
+    rotate: 6deg;
+  }
+}
+
+@keyframes ghost-float-five {
+  0%,
+  100% {
+    translate: 0 0;
+    rotate: -4deg;
+  }
+  20% {
+    translate: -30vw 18vh;
+    rotate: 5deg;
+  }
+  40% {
+    translate: 15vw 42vh;
+    rotate: -3deg;
+  }
+  60% {
+    translate: 42vw 12vh;
+    rotate: 6deg;
+  }
+  80% {
+    translate: 12vw -18vh;
+    rotate: -5deg;
+  }
+}
+
+@keyframes ghost-float-six {
+  0%,
+  100% {
+    translate: 0 0;
+    rotate: 3deg;
+  }
+  20% {
+    translate: -35vw -35vh;
+    rotate: -6deg;
+  }
+  40% {
+    translate: -65vw 5vh;
+    rotate: 5deg;
+  }
+  60% {
+    translate: -25vw 38vh;
+    rotate: -4deg;
+  }
+  80% {
+    translate: 12vw -15vh;
+    rotate: 6deg;
+  }
+}
+
+@keyframes ghost-float-seven {
+  0%,
+  100% {
+    translate: 0 0;
+    rotate: -3deg;
+  }
+  20% {
+    translate: 22vw -30vh;
+    rotate: 5deg;
+  }
+  40% {
+    translate: 55vw -48vh;
+    rotate: -6deg;
+  }
+  60% {
+    translate: 72vw -12vh;
+    rotate: 4deg;
+  }
+  80% {
+    translate: 30vw 20vh;
+    rotate: -5deg;
   }
 }
 
@@ -2087,4 +2262,13 @@ textarea {
   .season-candy-burst {
     display: none;
   }
+}
+
+.season-ghost {
+  pointer-events: auto;
+  cursor: pointer;
+}
+
+.season-pumpkin {
+  cursor: pointer;
 }

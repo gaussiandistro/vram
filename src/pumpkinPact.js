@@ -6,14 +6,14 @@ import { refreshSeasonOptions } from "./themeCustomizer.js";
 const SECRET_KEY = "pumpkinPact";
 const SECRET_SEASON = "jackolantern";
 
-const TAPS_REQUIRED = 5;
-const TAP_WINDOW_MS = 3000;
+//const TAPS_REQUIRED = 5;
+//const TAP_WINDOW_MS = 3000;
 const FLARE_MS = 2400;
 const TOAST_MS = 4600;
 
 const CANDY_COLORS = ["#ff9d3c", "#ffd166", "#f6e7cf", "#e2711d", "#c9a227"];
 
-let tapTimes = [];
+//let tapTimes = [];
 let flareTimer;
 
 function createCandyBurst() {
@@ -83,12 +83,14 @@ function unlockPact() {
   document.getElementById("themeSeason")?.dispatchEvent(new Event("change", { bubbles: true }));
 
   showToast("The patch accepts you. Jack-o'-lantern theme unlocked.");
+  //showToast("The day of the spooky draws near...");
 }
 
-function isPumpkinAt(x, y) {
-  return document.elementsFromPoint(x, y).some((element) => element.closest?.(".season-pumpkin"));
-}
+//function isPumpkinAt(x, y) {
+//return document.elementsFromPoint(x, y).some((element) => element.closest?.(".season-pumpkin"));
+//}
 
+/*
 export function initPumpkinPact() {
   document.addEventListener("click", (event) => {
     const season = document.documentElement.dataset.season;
@@ -113,3 +115,35 @@ export function initPumpkinPact() {
     unlockPact();
   });
 }
+*/
+export function initPumpkinPact() {
+  const season = document.documentElement.dataset.season;
+
+  if (season !== "halloween" && season !== SECRET_SEASON) return;
+
+  unlockPact();
+}
+
+const sounds = [
+  "/sounds/cs1.mp3",
+  "/sounds/cs2.mp3",
+  "/sounds/cs3.mp3",
+  "/sounds/cs4.mp3",
+  "/sounds/cs5.mp3",
+  "/sounds/cs6.mp3",
+  "/sounds/cs7.mp3",
+  "/sounds/cs8.mp3",
+  "/sounds/cs9.mp3",
+];
+
+window.addEventListener("click", (event) => {
+  const target = event.target.closest(".season-ghost, .season-pumpkin");
+
+  if (!target) return;
+
+  const randomIndex = Math.floor(Math.random() * sounds.length);
+  const randomSound = sounds[randomIndex];
+
+  const audio = new Audio(randomSound);
+  audio.play();
+});

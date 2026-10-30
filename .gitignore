@@ -24,3 +24,4 @@ supabase/.branches/
 *.njsproj
 *.sln
 *.sw?
+.env
