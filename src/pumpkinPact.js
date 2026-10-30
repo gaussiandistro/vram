@@ -6,14 +6,14 @@ import { refreshSeasonOptions } from "./themeCustomizer.js";
 const SECRET_KEY = "pumpkinPact";
 const SECRET_SEASON = "jackolantern";
 
-//const TAPS_REQUIRED = 5;
-//const TAP_WINDOW_MS = 3000;
+const TAPS_REQUIRED = 5;
+const TAP_WINDOW_MS = 3000;
 const FLARE_MS = 2400;
 const TOAST_MS = 4600;
 
 const CANDY_COLORS = ["#ff9d3c", "#ffd166", "#f6e7cf", "#e2711d", "#c9a227"];
 
-//let tapTimes = [];
+let tapTimes = [];
 let flareTimer;
 
 function createCandyBurst() {
@@ -86,11 +86,10 @@ function unlockPact() {
   //showToast("The day of the spooky draws near...");
 }
 
-//function isPumpkinAt(x, y) {
-//return document.elementsFromPoint(x, y).some((element) => element.closest?.(".season-pumpkin"));
-//}
+function isPumpkinAt(x, y) {
+  return document.elementsFromPoint(x, y).some((element) => element.closest?.(".season-pumpkin"));
+}
 
-/*
 export function initPumpkinPact() {
   document.addEventListener("click", (event) => {
     const season = document.documentElement.dataset.season;
@@ -114,14 +113,6 @@ export function initPumpkinPact() {
     tapTimes = [];
     unlockPact();
   });
-}
-*/
-export function initPumpkinPact() {
-  const season = document.documentElement.dataset.season;
-
-  if (season !== "halloween" && season !== SECRET_SEASON) return;
-
-  unlockPact();
 }
 
 const sounds = [

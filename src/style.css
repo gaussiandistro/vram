@@ -80,6 +80,14 @@
   --ground-back: #efdfc1;
 }
 
+:root[data-season="halloween"] body {
+  background:
+    linear-gradient(rgb(0 0 0 / 35%), rgb(0 0 0 / 55%)),
+    url("/dreamstime-dark-graveyard.png") center / cover no-repeat fixed;
+
+  background-color: #080504;
+}
+
 :root[data-theme="dark"][data-season="halloween"] {
   --background: #15100b;
   --text: #f2e6d2;
