@@ -35,11 +35,15 @@ import {
 
 import { initPumpkinPact } from "./pumpkinPact.js";
 
+import { initPumpkinPie } from "./pumpkinPie.js";
+
 import { loadScheduleData } from "./schedule.js";
 
 import { applyTheme, initTheme } from "./themeApply.js";
 
 import { initThemeCustomizer } from "./themeCustomizer.js";
+
+import { initThanksgivingTurkey } from "./thanksgivingTurkey.js";
 
 import { toInputDate, toInputTime } from "./time.js";
 
@@ -47,6 +51,8 @@ updateClockFormatControl();
 initTheme();
 initThemeCustomizer();
 initPumpkinPact();
+initPumpkinPie();
+initThanksgivingTurkey();
 
 elements.clockFormatToggle?.addEventListener("change", () => {
   setClockFormat(elements.clockFormatToggle.checked ? "24" : "12");

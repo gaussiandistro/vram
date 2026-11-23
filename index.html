@@ -38,6 +38,7 @@
 
         const seasons = [
           { id: "halloween", start: [10, 1], end: [10, 31], mode: "dark" },
+          { id: "thanksgiving", start: [11, 18], end: [11, 28], mode: "light" },
           { id: "jackolantern", mode: "dark", secret: true },
         ];
         const today = new Date();
@@ -92,6 +93,12 @@
   </head>
 
   <body>
+    <div class="thanksgiving-leaves" aria-hidden="true">
+      <span></span><span></span><span></span><span></span><span></span>
+    </div>
+    <div class="thanksgiving-turkey">
+      <button type="button" aria-label="Play turkey sound"></button>
+    </div>
     <div class="season-decor" aria-hidden="true">
       <div class="season-decor-vignette"></div>
 
@@ -681,6 +688,7 @@
         <div id="currentPeriod" class="current-period">--</div>
 
         <div id="countdown" class="countdown">--:--:--</div>
+        <div id="breakCountdown" class="break-countdown end-of-day hidden"></div>
 
         <div class="progress-wrapper">
           <div
@@ -783,6 +791,20 @@
       </section>
     </main>
 
+    <section class="pumpkin-pie" aria-label="Pumpkin pie Pi game">
+      <p id="pumpkinPieStatus" role="status">Type the digits of π, starting with 3.</p>
+      <input
+        id="pumpkinPieInput"
+        type="text"
+        inputmode="decimal"
+        autocomplete="off"
+        spellcheck="false"
+        aria-label="Digits of pi"
+        aria-describedby="pumpkinPieStatus"
+      />
+      <button id="pumpkinPieRetry" type="button" hidden>Try again?</button>
+    </section>
+
     <button
       id="changelogToggle"
       class="changelog-toggle"
@@ -828,6 +850,24 @@
         </div>
         <br />
         <h2 id="changelogTitle">Changelog</h2>
+
+        <div class="changelog-entry">
+          <h3>Thanksgiving Theme</h3>
+          <p class="changelog-date">November 22, 2026</p>
+          <ul>
+            <li>
+              Added a Thanksgiving theme with an orange background, drifting leaves, and pumpkins.
+            </li>
+            <li>
+              How many digits of pi can you type? Try the pumpkin pie activity to find out!
+            </li>
+            <li>
+              A turkey runs across the bottom of the page every once in a while. I wonder what happens if you try to click it...
+            </li>
+            <li>Added a countdown to Thanksgiving break on Tuesday, November 24.</li>
+            <li>Mintor bug fixes.</li> <!--Basically just the lunch boxes being on top of the pumpkins-->
+          </ul>
+        </div>
 
         <div class="changelog-entry">
           <h3>Halloween Theme Part 2</h3>

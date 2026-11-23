@@ -8,6 +8,13 @@ export const SEASONS = [
     mode: "dark",
   },
   {
+    id: "thanksgiving",
+    label: "Thanksgiving",
+    start: [11, 18],
+    end: [11, 28],
+    mode: "light",
+  },
+  {
     id: "jackolantern",
     label: "Jack-o'-lantern",
     secret: true,

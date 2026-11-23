@@ -185,6 +185,7 @@ export const elements = {
   dayMessage: byId("dayMessage"),
   currentPeriod: byId("currentPeriod"),
   countdown: byId("countdown"),
+  breakCountdown: byId("breakCountdown"),
   progressRing: byId("progressRing"),
   progressPercent: byId("progressPercent"),
   periodTimes: byId("periodTimes"),
@@ -432,6 +433,14 @@ function updateEndOfDay(type, seconds) {
 export function updateMainTracker(now) {
   const type = getDayType(now);
   const seconds = secondsIntoDay(now);
+
+  const breakEnd = type && dateKey(now) === "2026-11-24" ? getSchoolEndSeconds(type) : 0;
+  const showBreakCountdown = seconds < breakEnd;
+
+  setHidden(elements.breakCountdown, !showBreakCountdown);
+  if (showBreakCountdown) {
+    setText(elements.breakCountdown, `Time until break: ${formatDuration(breakEnd - seconds)}!`);
+  }
 
   updateEndOfDay(type, seconds);
 
