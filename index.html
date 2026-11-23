@@ -94,7 +94,8 @@
 
   <body>
     <div class="thanksgiving-leaves" aria-hidden="true">
-      <span></span><span></span><span></span><span></span><span></span>
+      <span></span><span></span><span></span><span></span><span></span> <span></span><span></span
+      ><span></span><span></span>
     </div>
     <div class="thanksgiving-turkey">
       <button type="button" aria-label="Play turkey sound"></button>
@@ -364,6 +365,247 @@
         focusable="false"
       >
         <use href="#seasonPumpkin" width="100%" height="100%" />
+      </svg>
+    </div>
+
+    <div class="thanksgiving-decor" aria-hidden="true">
+      <div class="season-decor-vignette"></div>
+
+      <svg class="season-sprite" width="0" height="0" aria-hidden="true" focusable="false">
+        <defs>
+          <radialGradient id="thanksgivingGourdFill" cx="40%" cy="32%" r="72%">
+            <stop offset="0" stop-color="var(--gourd-highlight)" />
+            <stop offset="0.6" stop-color="var(--gourd-body)" />
+            <stop offset="1" stop-color="var(--gourd-shadow)" />
+          </radialGradient>
+
+          <radialGradient id="thanksgivingSunFill" cx="50%" cy="50%" r="50%">
+            <stop offset="0" stop-color="var(--sun-core)" />
+            <stop offset="0.6" stop-color="var(--sun)" />
+            <stop offset="1" stop-color="var(--sun)" stop-opacity="0" />
+          </radialGradient>
+
+          <linearGradient id="thanksgivingGroundFill" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stop-color="var(--ground-top)" />
+            <stop offset="1" stop-color="var(--ground-bottom)" />
+          </linearGradient>
+
+          <linearGradient id="thanksgivingHayFill" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stop-color="var(--hay-light)" />
+            <stop offset="1" stop-color="var(--hay)" />
+          </linearGradient>
+
+          <pattern id="thanksgivingKernel" width="7" height="7" patternUnits="userSpaceOnUse">
+            <circle cx="3.5" cy="3.5" r="2.2" fill="var(--corn-kernel)" />
+          </pattern>
+
+          <symbol id="thanksgivingSun" viewBox="0 0 100 100">
+            <circle cx="50" cy="50" r="32" fill="url(#thanksgivingSunFill)" />
+          </symbol>
+
+          <symbol id="thanksgivingGourd" viewBox="0 0 140 108">
+            <ellipse cx="66" cy="96" rx="52" ry="9" fill="var(--ground-bottom)" opacity="0.28" />
+            <ellipse cx="112" cy="78" rx="20" ry="17" fill="var(--gourd-shadow)" />
+            <path d="M110 62c-1-6 2-9 6-11-2 5 0 8-1 11z" fill="var(--gourd-stem)" />
+            <path
+              d="M66 32c22 0 37 14 37 32s-15 32-37 32-37-14-37-32 15-32 37-32z"
+              fill="url(#thanksgivingGourdFill)"
+            />
+            <path
+              d="M48 38c-8 8-12 18-11 28 1 9 5 16 11 21-7-13-8-33 0-49z"
+              fill="var(--gourd-shadow)"
+              opacity="0.3"
+            />
+            <path
+              d="M84 38c8 8 12 18 11 28-1 9-5 16-11 21 7-13 8-33 0-49z"
+              fill="var(--gourd-shadow)"
+              opacity="0.3"
+            />
+            <path
+              d="M62 34c-6 12-8 26-5 40 2 7 4 11 7 14-3-16-3-37 2-54z"
+              fill="var(--gourd-highlight)"
+              opacity="0.3"
+            />
+            <path d="M60 33c-2-8 2-13 8-18-1 8 3 12 3 18z" fill="var(--gourd-stem)" />
+            <path
+              d="M76 30c11-11 24-13 33-8-8 10-21 13-33 8z"
+              fill="var(--gourd-stem)"
+              opacity="0.8"
+            />
+          </symbol>
+
+          <symbol id="thanksgivingWheatHead" viewBox="0 0 16 40">
+            <path d="M8 2c4 6 4 12 0 18-4-6-4-12 0-18z" fill="var(--wheat-grain)" />
+            <path d="M8 20c4 6 4 12 0 18-4-6-4-12 0-18z" fill="var(--wheat-grain)" opacity="0.85" />
+            <path
+              d="M2 8c3 3 4 7 3 11M14 8c-3 3-4 7-3 11"
+              fill="none"
+              stroke="var(--wheat-grain)"
+              stroke-linecap="round"
+              stroke-width="2"
+              opacity="0.9"
+            />
+          </symbol>
+
+          <symbol id="thanksgivingWheat" viewBox="0 0 64 110">
+            <g fill="none" stroke="var(--wheat-stem)" stroke-linecap="round" stroke-width="2">
+              <path d="M32 110V36" />
+              <path d="M32 110 16 42" />
+              <path d="M32 110 48 42" />
+            </g>
+            <use href="#thanksgivingWheatHead" x="24" y="2" width="16" height="36" />
+            <use
+              href="#thanksgivingWheatHead"
+              x="8"
+              y="8"
+              width="16"
+              height="36"
+              transform="rotate(-16 16 26)"
+            />
+            <use
+              href="#thanksgivingWheatHead"
+              x="40"
+              y="8"
+              width="16"
+              height="36"
+              transform="rotate(16 48 26)"
+            />
+          </symbol>
+
+          <symbol id="thanksgivingHay" viewBox="0 0 150 104">
+            <ellipse cx="75" cy="99" rx="66" ry="7" fill="var(--ground-bottom)" opacity="0.25" />
+            <rect x="36" y="18" width="84" height="42" rx="7" fill="url(#thanksgivingHayFill)" />
+            <path d="M36 24h84" stroke="var(--hay-shadow)" stroke-width="2" opacity="0.3" />
+            <path d="M58 18v42M98 18v42" stroke="var(--hay-twine)" stroke-width="3" opacity="0.7" />
+            <path
+              d="M64 34l8-6M70 48l8-6M104 30l8-5"
+              fill="none"
+              stroke="var(--hay-shadow)"
+              stroke-linecap="round"
+              stroke-width="1.4"
+              opacity="0.4"
+            />
+            <rect x="8" y="58" width="134" height="44" rx="8" fill="url(#thanksgivingHayFill)" />
+            <path d="M8 64h134" stroke="var(--hay-shadow)" stroke-width="2" opacity="0.28" />
+            <path
+              d="M46 58v44M104 58v44"
+              stroke="var(--hay-twine)"
+              stroke-width="3"
+              opacity="0.7"
+            />
+            <path
+              d="M20 78l9-6M32 90l9-6M118 84l9-6M112 72l9-6M26 66l8-5"
+              fill="none"
+              stroke="var(--hay-shadow)"
+              stroke-linecap="round"
+              stroke-width="1.4"
+              opacity="0.4"
+            />
+          </symbol>
+
+          <symbol id="thanksgivingCorn" viewBox="0 0 44 100">
+            <path
+              d="M22 4c9 8 13 26 12 46-1 16-6 30-12 38-6-8-11-22-12-38-1-20 3-38 12-46z"
+              fill="var(--corn-cob)"
+            />
+            <path
+              d="M22 12c6 8 9 22 8 38-1 12-4 22-8 28-4-6-7-16-8-28-1-16 2-30 8-38z"
+              fill="url(#thanksgivingKernel)"
+            />
+            <path d="M22 88c-9-4-14-14-15-27 8 5 13 13 15 27z" fill="var(--corn-husk)" />
+            <path
+              d="M22 88c9-4 14-14 15-27-8 5-13 13-15 27z"
+              fill="var(--corn-husk)"
+              opacity="0.85"
+            />
+          </symbol>
+        </defs>
+      </svg>
+
+      <svg
+        class="thanksgiving-sun"
+        width="0"
+        height="0"
+        viewBox="0 0 100 100"
+        aria-hidden="true"
+        focusable="false"
+      >
+        <use href="#thanksgivingSun" width="100%" height="100%" />
+      </svg>
+
+      <svg
+        class="thanksgiving-ground"
+        width="0"
+        height="0"
+        viewBox="0 0 1440 120"
+        preserveAspectRatio="none"
+        aria-hidden="true"
+        focusable="false"
+      >
+        <path
+          d="M0 120V100C180 88 340 106 520 100S860 84 1040 94 1300 102 1440 96V120Z"
+          fill="var(--ground-back)"
+          opacity="0.65"
+        />
+        <path
+          d="M0 120V92C140 84 300 104 470 98S780 80 950 90 1240 100 1440 90V120Z"
+          fill="url(#thanksgivingGroundFill)"
+        />
+      </svg>
+
+      <svg
+        class="thanksgiving-gourd thanksgiving-gourd--right"
+        width="0"
+        height="0"
+        viewBox="0 0 140 108"
+        aria-hidden="true"
+        focusable="false"
+      >
+        <use href="#thanksgivingGourd" width="100%" height="100%" />
+      </svg>
+
+      <svg
+        class="thanksgiving-gourd thanksgiving-gourd--left"
+        width="0"
+        height="0"
+        viewBox="0 0 140 108"
+        aria-hidden="true"
+        focusable="false"
+      >
+        <use href="#thanksgivingGourd" width="100%" height="100%" />
+      </svg>
+
+      <svg
+        class="thanksgiving-wheat"
+        width="0"
+        height="0"
+        viewBox="0 0 64 110"
+        aria-hidden="true"
+        focusable="false"
+      >
+        <use href="#thanksgivingWheat" width="100%" height="100%" />
+      </svg>
+
+      <svg
+        class="thanksgiving-hay thanksgiving-hay--bale"
+        width="0"
+        height="0"
+        viewBox="0 0 150 104"
+        aria-hidden="true"
+        focusable="false"
+      >
+        <use href="#thanksgivingHay" width="100%" height="100%" />
+      </svg>
+
+      <svg
+        class="thanksgiving-corn"
+        width="0"
+        height="0"
+        viewBox="0 0 44 100"
+        aria-hidden="true"
+        focusable="false"
+      >
+        <use href="#thanksgivingCorn" width="100%" height="100%" />
       </svg>
     </div>
 
@@ -858,14 +1100,14 @@
             <li>
               Added a Thanksgiving theme with an orange background, drifting leaves, and pumpkins.
             </li>
+            <li>How many digits of pi can you type? Try the pumpkin pie activity to find out!</li>
             <li>
-              How many digits of pi can you type? Try the pumpkin pie activity to find out!
-            </li>
-            <li>
-              A turkey runs across the bottom of the page every once in a while. I wonder what happens if you try to click it...
+              A turkey runs across the bottom of the page every once in a while. I wonder what
+              happens if you try to click it...
             </li>
             <li>Added a countdown to Thanksgiving break on Tuesday, November 24.</li>
-            <li>Mintor bug fixes.</li> <!--Basically just the lunch boxes being on top of the pumpkins-->
+            <li>Minor bug fixes.</li>
+            <!--Basically just the lunch boxes being on top of the pumpkins-->
           </ul>
         </div>
 

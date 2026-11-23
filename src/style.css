@@ -52,22 +52,38 @@
 
 :root[data-season="thanksgiving"] {
   --background: #efa55f;
+  --text: #2b1a10;
+  --card: rgb(255 249 236 / 78%);
+  --border: #4a2b13;
+  --ring-background: #fff6e8;
+  --ring-progress: #a8491b;
+  --field: #fff8ec;
+  --row-border: rgb(43 26 16 / 18%);
+  --hover: rgb(255 249 236 / 45%);
+  --accent: #a8491b;
+  --gourd-highlight: #ffbe6a;
+  --gourd-body: #e08a2e;
+  --gourd-shadow: #a95611;
+  --gourd-stem: #6b6b2c;
+  --wheat-stem: #b07d24;
+  --wheat-grain: #dba844;
+  --hay-light: #f0cd8a;
+  --hay: #d9a95b;
+  --hay-shadow: #b3813a;
+  --hay-twine: #8e6526;
+  --corn-cob: #efc051;
+  --corn-kernel: #f8db84;
+  --corn-husk: #8c9a3f;
+  --sun: #f8c878;
+  --sun-core: #fff3d6;
+  --ground-top: #c9803c;
+  --ground-bottom: #b0672c;
+  --ground-back: #d99a54;
 }
 
 :root[data-season="thanksgiving"] .lunch-section {
   position: relative;
   z-index: 100;
-}
-
-:root[data-season="thanksgiving"]:not([data-season-effects="off"]) body::before {
-  content: "";
-  position: fixed;
-  right: calc(env(safe-area-inset-right) - 40px);
-  bottom: calc(env(safe-area-inset-bottom) - 50px);
-  width: min(44vw, 670px);
-  aspect-ratio: 1200 / 512;
-  background: url("/thanksgiving-pumpkins.webp") center / contain no-repeat;
-  pointer-events: none;
 }
 
 .thanksgiving-leaves,
@@ -134,8 +150,11 @@
   display: none;
 }
 
-:root[data-season="thanksgiving"] .pumpkin-pie {
+:root[data-season="thanksgiving"]:not([data-season-effects="off"]) .pumpkin-pie {
   display: grid;
+}
+
+:root[data-season="thanksgiving"] .pumpkin-pie {
   grid-template-rows: 1fr auto 1fr;
   justify-items: center;
   gap: 7px;
@@ -143,7 +162,7 @@
   left: max(12px, env(safe-area-inset-left));
   bottom: max(44px, calc(env(safe-area-inset-bottom) + 36px));
   z-index: 101;
-  width: 204px;
+  width: clamp(150px, 15vw, 204px);
   aspect-ratio: 1;
   border: 9px ridge #e9a963;
   border-radius: 50%;
@@ -256,6 +275,38 @@
     --leaf-color: #9c3428;
     --leaf-cycle: 37s;
     --leaf-delay: 17s;
+  }
+
+  .thanksgiving-leaves span:nth-child(6) {
+    --leaf-left: 6%;
+    --leaf-size: 21px;
+    --leaf-color: #b8551f;
+    --leaf-cycle: 22s;
+    --leaf-delay: 10s;
+  }
+
+  .thanksgiving-leaves span:nth-child(7) {
+    --leaf-left: 38%;
+    --leaf-size: 17.5px;
+    --leaf-color: #7d4a22;
+    --leaf-cycle: 26s;
+    --leaf-delay: 2s;
+  }
+
+  .thanksgiving-leaves span:nth-child(8) {
+    --leaf-left: 62%;
+    --leaf-size: 23px;
+    --leaf-color: #c2381f;
+    --leaf-cycle: 29s;
+    --leaf-delay: 15s;
+  }
+
+  .thanksgiving-leaves span:nth-child(9) {
+    --leaf-left: 95%;
+    --leaf-size: 19px;
+    --leaf-color: #96651d;
+    --leaf-cycle: 34s;
+    --leaf-delay: 8s;
   }
 
   @keyframes thanksgiving-leaf-fall {
@@ -2074,6 +2125,139 @@ textarea {
 
   width: 100%;
   height: clamp(64px, 9vh, 118px);
+}
+
+.thanksgiving-decor {
+  display: none;
+}
+
+:root[data-season="thanksgiving"]:not([data-season-effects="off"]) .thanksgiving-decor {
+  display: block;
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+:root[data-season="thanksgiving"] .season-decor-vignette {
+  background:
+    radial-gradient(30% 45% at 4% 100%, rgb(255 189 105 / 26%), transparent 72%),
+    radial-gradient(26% 38% at 96% 100%, rgb(255 189 105 / 20%), transparent 72%),
+    radial-gradient(120% 80% at 50% 0%, transparent 64%, rgb(116 58 16 / 11%) 100%),
+    linear-gradient(0deg, rgb(116 58 16 / 9%), transparent 30%);
+}
+
+.thanksgiving-sun {
+  position: absolute;
+  top: 11%;
+  left: 7%;
+
+  width: clamp(56px, 6vw, 84px);
+  height: auto;
+
+  opacity: 0.5;
+}
+
+.thanksgiving-ground {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+
+  width: 100%;
+  height: clamp(60px, 8vh, 104px);
+}
+
+.thanksgiving-gourd {
+  position: absolute;
+  bottom: -10px;
+
+  height: auto;
+
+  filter: drop-shadow(0 8px 18px rgb(96 44 12 / 18%));
+}
+
+.thanksgiving-gourd--right {
+  right: clamp(-30px, -2vw, -12px);
+
+  width: clamp(104px, 13vw, 154px);
+
+  rotate: 5deg;
+}
+
+.thanksgiving-gourd--left {
+  left: 30%;
+  bottom: -7px;
+
+  width: clamp(62px, 7vw, 88px);
+
+  rotate: -4deg;
+}
+
+.thanksgiving-wheat {
+  position: absolute;
+  left: 62%;
+  bottom: -8px;
+
+  width: clamp(38px, 4.2vw, 54px);
+  height: auto;
+
+  rotate: -3deg;
+  opacity: 0.92;
+}
+
+.thanksgiving-hay {
+  position: absolute;
+  right: 13%;
+  bottom: -8px;
+
+  height: auto;
+
+  filter: drop-shadow(0 8px 18px rgb(96 44 12 / 16%));
+}
+
+.thanksgiving-hay--bale {
+  width: clamp(96px, 10.5vw, 138px);
+}
+
+.thanksgiving-corn {
+  position: absolute;
+  right: 22%;
+  bottom: -4px;
+
+  width: clamp(26px, 3vw, 38px);
+  height: auto;
+
+  rotate: -9deg;
+  opacity: 0.95;
+}
+
+@media (max-width: 800px) {
+  .thanksgiving-sun,
+  .thanksgiving-wheat,
+  .thanksgiving-corn {
+    display: none;
+  }
+
+  .thanksgiving-hay--bale {
+    right: 9%;
+
+    width: 78px;
+  }
+
+  .thanksgiving-gourd--right {
+    right: -22px;
+    bottom: -8px;
+
+    width: 96px;
+  }
+
+  .thanksgiving-gourd--left {
+    left: 33%;
+
+    width: 58px;
+  }
 }
 
 .season-pumpkin {
