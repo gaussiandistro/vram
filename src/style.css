@@ -90,7 +90,7 @@
 .thanksgiving-turkey {
   display: none;
   position: relative;
-  z-index: 101;
+  z-index: 999;
 }
 
 @media (prefers-reduced-motion: no-preference) {
@@ -2159,6 +2159,7 @@ textarea {
   height: auto;
 
   opacity: 0.5;
+  pointer-events: none;
 }
 
 .thanksgiving-ground {
@@ -2169,6 +2170,7 @@ textarea {
 
   width: 100%;
   height: clamp(60px, 8vh, 104px);
+  pointer-events: none;
 }
 
 .thanksgiving-gourd {
@@ -2178,6 +2180,7 @@ textarea {
   height: auto;
 
   filter: drop-shadow(0 8px 18px rgb(96 44 12 / 18%));
+  pointer-events: none;
 }
 
 .thanksgiving-gourd--right {
@@ -2186,6 +2189,7 @@ textarea {
   width: clamp(104px, 13vw, 154px);
 
   rotate: 5deg;
+  pointer-events: none;
 }
 
 .thanksgiving-gourd--left {
@@ -2195,6 +2199,7 @@ textarea {
   width: clamp(62px, 7vw, 88px);
 
   rotate: -4deg;
+  pointer-events: none;
 }
 
 .thanksgiving-wheat {
@@ -2207,23 +2212,26 @@ textarea {
 
   rotate: -3deg;
   opacity: 0.92;
+  pointer-events: none;
 }
 
 .thanksgiving-hay {
   position: absolute;
   right: 13%;
   bottom: -8px;
-
+  pointer-events: none;
   height: auto;
 
   filter: drop-shadow(0 8px 18px rgb(96 44 12 / 16%));
 }
 
 .thanksgiving-hay--bale {
+  pointer-events: none;
   width: clamp(96px, 10.5vw, 138px);
 }
 
 .thanksgiving-corn {
+  pointer-events: none;
   position: absolute;
   right: 22%;
   bottom: -4px;

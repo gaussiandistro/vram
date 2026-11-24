@@ -29,7 +29,7 @@ export function initThanksgivingTurkey() {
 
         scheduleRun();
       },
-      20000 + Math.random() * 20000
+      1000 + Math.random() * 3000
     );
   }
 
