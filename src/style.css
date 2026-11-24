@@ -89,6 +89,8 @@
 .thanksgiving-leaves,
 .thanksgiving-turkey {
   display: none;
+  position: relative;
+  z-index: 101;
 }
 
 @media (prefers-reduced-motion: no-preference) {
